@@ -1,0 +1,19 @@
+@import "../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.headerIcon {
+		margin-left: auto;
+	}
+
+	.content {
+		@include page-content(flex-start);
+		padding: 10px 0;
+
+		.buttons {
+			width: 100%;
+			margin-top: 44px;
+		}
+	}
+}

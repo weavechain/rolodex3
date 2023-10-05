@@ -1,0 +1,37 @@
+@import "../../assets/styles/app";
+
+.root {
+	width: 100%;
+	margin-bottom: 16px;
+
+	.title {
+		@include font-body16($white-100);
+		font-weight: 600;
+	}
+
+	.copyWidget {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		cursor: pointer;
+		@include font-body12($gray-40);
+
+		&:hover {
+			.text {
+				letter-spacing: 0.04em !important;
+				color: $blue-100 !important;
+				font-weight: 600 !important;
+			}
+
+			svg path {
+				stroke: $blue-100;
+			}
+		}
+
+		.copyIcon {
+			@include flex();
+			height: 100%;
+			margin-left: 10px;
+		}
+	}
+}

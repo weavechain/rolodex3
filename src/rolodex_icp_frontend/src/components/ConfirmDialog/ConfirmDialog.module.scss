@@ -1,0 +1,41 @@
+@import "../../assets/styles/app";
+
+.root {
+	.title {
+		@include font-body16($white-100);
+		text-align: center;
+		width: 100%;
+	}
+
+	.description {
+		@include font-body16($gray-100);
+	}
+
+	.content {
+		@include flex();
+		min-height: 150px;
+	}
+
+	.input {
+		@include font-body16($gray-100);
+		border: solid 1px $gray-20;
+	}
+
+	.info {
+		@include font-body12($gray-80);
+		margin-top: 4px;
+	}
+
+	.buttons {
+		@include flex();
+		width: 100%;
+
+		button {
+			min-width: 280px;
+		}
+
+		button + button {
+			margin-left: 8px;
+		}
+	}
+}

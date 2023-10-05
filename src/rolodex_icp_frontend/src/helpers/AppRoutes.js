@@ -1,0 +1,31 @@
+
+const AppRoutes = {
+	home: 											"/",
+	welcome: 										"/welcome",
+	login: 											"/login",
+	loginWithToken: 						"/login/:token?",
+	metamask: 									"/waiting",
+	profile: 										"/profile",
+	contacts: 									"/contacts",
+	contactsRequests: 					"/contacts/requests",
+	contactsSent: 							"/contacts/sent",
+	contactsReceived: 					"/contacts/received",
+	contactsExchange: 					"/contacts/exchange",
+	contactsRespond: 						"/contacts/answer",
+	exchangeInfo: 							"/contacts/exchange-info",
+	contactDetails: 						"/contacts/:id",
+	coreProfile: 								"/profile/core",
+	profileInfo:								"/profile/info",
+	profileVisibility:					"/profile/visibility",
+	directories:	 							"/directories",
+	myDirectories: 							"/my-directories",
+	directoryDetails: 					"/directories/:id",
+	directoryProfile: 					"/directories/:id/profile",
+	directoryEditProfile: 			"/directories/:id/profile/edit",
+	directoryMembers: 					"/directories/:id/members",
+	directoryMemberDetails: 		"/directories/:id/members/:memberId",
+	directoryJoin: 							"/directories/:id/join",
+	viewAs: 										"/view",
+};
+
+export default AppRoutes;

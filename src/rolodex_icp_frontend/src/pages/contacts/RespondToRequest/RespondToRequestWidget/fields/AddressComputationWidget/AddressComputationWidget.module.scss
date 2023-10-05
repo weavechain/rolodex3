@@ -1,0 +1,49 @@
+@import "../../../../../../assets/styles/app";
+
+
+.root {
+	width: 100%;
+
+	.sectionHeader {
+		@include flex();
+		justify-content: space-between;
+
+		.title {
+			@include font-header3($gray-40);
+		}
+	}
+
+	.computation {
+		@include flex-left();
+
+		svg {
+			margin-left: 4px;
+		}
+	}
+
+	.sectionText {
+		@include font-body16($white-100);
+		text-transform: capitalize;
+
+		&.blue {
+			color: $blue-100;
+		}
+
+		&.restricted {
+			color: $gray-60;
+		}
+	}
+
+	.selector {
+		@include flex();
+		width: 164px;
+		padding: 2px 0;
+		border-radius: 9px;
+		height: 32px;
+
+		input {
+			background: $gray-60;
+			@include font-body12($white, 400);
+		}
+	}
+}

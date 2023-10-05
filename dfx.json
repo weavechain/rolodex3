@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "rolodex_icp_backend": {
+      "main": "src/rolodex_icp_backend/main.mo",
+      "type": "motoko"
+    },
+    "rolodex_icp_frontend": {
+      "dependencies": [
+        "rolodex_icp_backend"
+      ],
+      "frontend": {
+        "entrypoint": "public/index.html"
+      },
+      "source": [
+        "src/rolodex_icp_frontend/assets",
+        "build/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

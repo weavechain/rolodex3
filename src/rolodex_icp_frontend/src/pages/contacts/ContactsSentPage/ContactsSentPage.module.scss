@@ -1,0 +1,10 @@
+@import "../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.content {
+		@include page-content(flex-start);
+		padding: 0 0 100px;
+	}
+}

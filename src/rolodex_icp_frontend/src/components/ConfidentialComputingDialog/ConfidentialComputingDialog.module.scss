@@ -1,0 +1,30 @@
+@import "../../assets/styles/app";
+
+.root {
+	.icon {
+		@include flex();
+		cursor: pointer;
+		margin-left: 4px;
+	}
+
+	.title {
+		@include font-body16($white-100);
+		font-weight: 600;
+		text-align: center;
+		width: 100%;
+	}
+
+	.description {
+		@include font-body14($white-100, "Poppins", 400);
+		text-align: center;
+
+		span {
+			font-family: "Poppins";
+			font-weight: 800;
+		}
+	}
+
+	.buttons {
+		width: 100%;
+	}
+}

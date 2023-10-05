@@ -1,0 +1,38 @@
+@import "../../assets/styles/app";
+
+.root {
+	@include flex();
+	position: sticky;
+	left: 0;
+	top: 0;
+	right: 0;
+	z-index: 1000;
+	min-height: 56px;
+	width: 100%;
+	padding: 0 15px;
+	background: $gray-200;
+
+	.title {
+		@include font-body16($white-100, 600);
+		letter-spacing: normal;
+		flex: 1;
+		text-align: center;
+	}
+
+	.backButton {
+		position: absolute;
+		left: 0;
+		cursor: pointer;
+
+		@include flex();
+		@include font-body14($green-100, 600);
+		letter-spacing: 0.56px;
+
+		span {
+			flex: 1;
+			text-align: center;
+			color: $green-100;
+			margin-left: 8px;
+		}
+	}
+}

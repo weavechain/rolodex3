@@ -1,0 +1,17 @@
+@import "../../../assets/styles/app.scss";
+
+.root {
+	.title {
+		@include font-header3($white-100);
+		margin-bottom: 2px;
+	}
+
+	.other {
+		padding-left: 12px;
+		margin-top: 8px;
+
+		.title {
+			@include font-header3($white-100);
+		}
+	}
+}

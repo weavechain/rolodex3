@@ -1,0 +1,29 @@
+@import "../../../../assets/styles/app";
+
+.root {
+	width: 100%;
+
+	.sectionHeader {
+		@include flex();
+		justify-content: space-between;
+
+		.title {
+			@include font-header3($gray-40);
+		}
+	}
+
+	.items {
+		.item {
+			margin-bottom: 2px;
+		}
+	}
+
+	.computation {
+		@include flex-left();
+		margin-top: 2px;
+
+		svg {
+			margin-left: 4px;
+		}
+	}
+}

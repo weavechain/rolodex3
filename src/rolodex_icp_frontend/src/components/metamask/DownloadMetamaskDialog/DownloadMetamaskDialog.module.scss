@@ -1,0 +1,28 @@
+@import "../../../assets/styles/app";
+
+.root {
+	.title {
+		@include font-header2($gray-100);
+		text-align: center;
+	}
+
+	.logoContainer {
+		@include flex();
+		margin-bottom: 16px;
+	}
+
+	.description {
+		@include font-body16($gray-100);
+		text-align: center;
+
+		&.dark {
+			color: $white-100;
+		}
+	}
+
+	.buttons {
+		button:first-child {
+			margin-right: 4px;
+		}
+	}
+}

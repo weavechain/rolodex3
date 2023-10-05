@@ -1,0 +1,69 @@
+// Primary, Primary Dark, Primary Link, Primary border, Secondary
+.btn {
+	height: 48px;
+	transition: background-color 0.5s, color 0.5s;
+
+	&.btn-icon {
+		padding: $padding-base-vertical;
+	}
+
+	&.btn-small {
+		width: 200px;
+		margin-bottom: 12px;
+	}
+
+	&.btn-primary {
+		@include btn-styles($green-100, $gray-100);
+
+		&:hover {
+			background-color: $green-60 !important;
+			color: $gray-100 !important;
+		}
+	}
+
+	&.btn-primary.link {
+		@include btn-styles("transparent", $green-100);
+
+		&:hover {
+			@include btn-styles("transparent", $green-100);
+		}
+	}
+
+	&.btn-primary.btn-border {
+		@include btn-styles($green-100, $green-100);
+		background-color: transparent;
+		border-width: 2px;
+
+		&:hover {
+			background-color: $green-60 !important;
+			color: $gray-100 !important;
+		}
+	}
+
+	&.btn-info.btn-border {
+		@include border-btn-styles(var(--button-border), var(--button-text), $dark);
+	}
+
+	&.btn-danger {
+		@include btn-styles($bad, $white-color);
+
+		&:hover {
+			@include btn-styles($danger-dark, $white-color);
+		}
+	}
+
+	&.btn-danger.btn-border {
+		@include border-btn-styles($bad, $white-color, $white-color);
+	}
+
+	&.btn-link {
+		@include font-button-text($blue-100);
+
+		&:focus,
+		&:active,
+		&.active {
+			border-color: none;
+			box-shadow: none;
+		}
+	}
+}

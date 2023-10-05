@@ -1,0 +1,14 @@
+@import "../assets/styles/app";
+
+.root {
+	position: relative;
+	min-height: 100vh;
+
+	max-width: 390px;
+
+	@media (max-width: "1080px") {
+	}
+
+	@media (max-width: "700px") {
+	}
+}

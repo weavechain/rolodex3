@@ -1,0 +1,94 @@
+@import "../../../../../../assets/styles/app";
+
+.root {
+	width: 100%;
+
+	.grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-gap: 8px;
+	}
+
+	.sectionLabel {
+		@include font-body12($gray-60, 400);
+		font-style: italic;
+		line-height: normal;
+		letter-spacing: -0.24px;
+		margin-top: 2px;
+	}
+
+	.section {
+		width: 100%;
+		margin-bottom: 8px;
+
+		.sectionHeader {
+			max-width: 100%;
+			margin-bottom: 2px;
+
+			@include flex();
+			justify-content: space-between;
+
+			.title {
+				@include font-header3($gray-40);
+
+				&.requested {
+					color: $green-100;
+				}
+			}
+		}
+	}
+
+	.sectionHeader {
+		@include font-body14($gray-60, 600);
+
+		span {
+			margin-left: 2px;
+		}
+	}
+
+	.emailsContainer {
+		.primary {
+			@include flex-left();
+			margin-bottom: 8px;
+
+			.email {
+				@include font-body16($white, 400);
+			}
+
+			.note {
+				@include font-body10($gray-60, 600);
+				border-radius: 100px;
+				background: $gray-100;
+				margin-left: 10px;
+				padding: 4px 8px;
+			}
+		}
+
+		.otherEmails {
+			.otherHeader {
+				@include font-body14($white, 600);
+				margin-bottom: 2px;
+			}
+
+			.otherEmail {
+				input {
+					margin-bottom: 8px;
+				}
+			}
+		}
+
+		.additionalButton {
+			@include flex();
+			justify-content: flex-end;
+			margin-bottom: 8px;
+			cursor: pointer;
+			height: 24px;
+
+			span {
+				@include font-body16($green-100, 600);
+				letter-spacing: 0.64px;
+				margin-left: 10px;
+			}
+		}
+	}
+}

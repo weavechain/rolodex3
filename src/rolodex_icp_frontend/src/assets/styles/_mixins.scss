@@ -1,0 +1,384 @@
+@mixin page-layout() {
+	@include flex-column();
+	height: 100vh;
+	//justify-content: flex-start;
+}
+
+@mixin page-content($justify-content: center) {
+	@include flex-column();
+	justify-content: $justify-content;
+	height: 100%;
+	width: 100%;
+	padding-left: 14px;
+	padding-right: 14px;
+	overflow-y: auto;
+	padding-bottom: 100px;
+}
+
+@mixin page-fixed-footer() {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+
+	background-color: $white-100;
+	box-shadow: 0px -1px 1px rgba(0, 0, 0, 0.15);
+}
+
+@mixin page-footer() {
+	position: sticky;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin-left: -30px;
+	margin-right: -30px;
+	z-index: 1000;
+
+	background-color: $white-100;
+	box-shadow: 0px -1px 1px rgba(0, 0, 0, 0.15);
+}
+
+@mixin footer-buttons() {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 24px 30px;
+
+	button {
+		flex: 1;
+		height: 48px;
+		margin-bottom: 0;
+		margin-right: 8px;
+
+		@include ellipsis();
+
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+
+	@media (max-width: "1080px") {
+		flex-direction: column;
+		justify-content: center;
+
+		button {
+			width: 100%;
+			height: 48px;
+			flex: unset;
+			margin-bottom: 8px;
+			margin-right: 0px;
+		}
+	}
+}
+
+// FONTS
+@mixin font-header1($color, $weight: 700) {
+	font-family: "Poppins";
+	font-weight: $weight;
+	color: $color;
+
+	font-style: normal;
+	font-size: 34px;
+	line-height: 51px;
+	letter-spacing: -0.02em;
+}
+
+@mixin font-header2($color, $weight: 700) {
+	font-family: "Poppins";
+	font-weight: $weight;
+	color: $color;
+
+	font-style: normal;
+	font-size: 20px;
+	line-height: 30px;
+	letter-spacing: -0.04em;
+}
+
+@mixin font-header3($color, $weight: 600) {
+	font-family: "Poppins";
+	font-weight: $weight;
+	color: $color;
+
+	font-style: normal;
+	font-size: 16px;
+	line-height: 21px;
+	letter-spacing: -0.02em;
+}
+
+@mixin font-header4($color, $weight: 600) {
+	font-family: "Poppins";
+	font-weight: $weight;
+	color: $color;
+	font-style: normal;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+/* BODY TEXT */
+@mixin font-body20($color, $weight: 400) {
+	@include font-header2($color, $weight);
+}
+
+@mixin font-body16($color, $weight: 400) {
+	@include font-header3($color, $weight);
+}
+
+@mixin font-body14($color, $weight: 600, $family: "Poppins") {
+	font-family: "Poppins";
+	font-weight: $weight;
+	color: $color;
+	font-style: normal;
+	font-size: 14px;
+	line-height: 21px;
+}
+
+@mixin font-body12($color, $weight: 400) {
+	@include font-header4($color, $weight);
+	letter-spacing: -0.02em;
+}
+
+@mixin font-body10($color, $weight: 600) {
+	font-family: "Poppins";
+	color: $color;
+	font-weight: $weight;
+	font-style: normal;
+	font-size: 10px;
+	line-height: 15px;
+	letter-spacing: -0.02em;
+}
+
+@mixin ellipsis() {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+// BUTTONS
+@mixin btn-styles($color, $gray-700) {
+	@include font-button-text($gray-700);
+
+	border-color: $color;
+	background-color: $color;
+
+	&:focus,
+	&:active,
+	&.active {
+		border-color: $color;
+		//background-color: $color;
+		color: $gray-700;
+		box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+		outline: none;
+	}
+
+	&.disabled,
+	&:disabled,
+	&[disabled] {
+		&,
+		&:hover,
+		&:focus,
+		&.focus,
+		&:active,
+		&.active {
+			color: $gray-20 !important;
+			background-color: $gray-60 !important;
+			border: $gray-60;
+			opacity: 1;
+		}
+	}
+}
+
+@mixin font-button-text($color, $family: "Poppins", $weight: 600) {
+	font-family: $family;
+	color: $color;
+	font-weight: $weight;
+	font-style: normal;
+	font-size: 16px;
+	line-height: 16px;
+	letter-spacing: 0.04em;
+}
+
+@mixin border-btn-styles($color, $gray-700, $hover-color) {
+	@include font-button-text($color);
+
+	border-color: $color;
+	border-width: 2px;
+	background-color: transparent;
+
+	&:focus,
+	&:active,
+	&.active {
+		border-color: $color;
+		background-color: $color;
+		color: $hover-color;
+		box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+		outline: none;
+	}
+
+	&:hover {
+		color: $hover-color;
+		background-color: $color;
+	}
+
+	&.disabled,
+	&:disabled,
+	&[disabled] {
+		&,
+		&:hover,
+		&:focus,
+		&.focus,
+		&:active,
+		&.active {
+			background-color: $gray-700 !important;
+			color: $gray-60 !important;
+			border: solid 2px $gray-60;
+		}
+	}
+}
+
+@mixin btn-size($padding-vertical, $padding-horizontal, $font-size, $border) {
+	font-size: $font-size;
+	border-radius: $border;
+	padding: $padding-vertical $padding-horizontal;
+
+	&.btn-round {
+		padding: $padding-vertical + 1 $padding-horizontal;
+	}
+
+	&.btn-simple {
+		padding: $padding-vertical + 2 $padding-horizontal;
+	}
+}
+
+@mixin header-button($color: $gray-100) {
+	width: 160px;
+	height: 48px;
+	background: #52e8cd;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+	border-radius: 4px;
+
+	@include font-button-text($gray-100);
+	color: $color !important;
+	border: none;
+
+	margin-left: 30px;
+
+	i {
+		margin-right: 10px;
+	}
+}
+
+// DISPLAY
+@mixin grid($cols: 2, $gap: 8) {
+	display: grid;
+	gap: $gap;
+	grid-template-columns: repeat($cols, 1fr);
+}
+
+@mixin flex() {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin flex-left() {
+	display: flex;
+	align-items: center;
+}
+
+@mixin flex-row() {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin flex-column() {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin flex-right() {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+// INPUTS
+@mixin placeholder($color: $gray-60) {
+	@include font-body16($color, 400);
+}
+
+// Opacity
+@mixin opacity($opacity) {
+	opacity: $opacity;
+	// IE8 filter
+	$opacity-ie: ($opacity * 100);
+	filter: #{alpha(opacity=$opacity-ie)};
+}
+
+@mixin black-filter($opacity) {
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	background-color: rgba(17, 17, 17, $opacity);
+	display: block;
+	content: "";
+	z-index: 1;
+}
+
+@mixin user-select() {
+	user-select: none;
+
+	/* Mozilla-specific values */
+	-moz-user-select: none;
+
+	/* WebKit-specific values */
+	-webkit-user-select: none;
+	/* Microsoft-specific values */
+	-ms-user-select: none;
+}
+
+// TABLE
+@mixin highlight-table-cell($color) {
+	font-family: "Poppins";
+	color: $color;
+	letter-spacing: 0.04em;
+}
+
+@mixin node-health($color) {
+	@include font-body12($color);
+	padding: 4px 8px;
+	border-radius: 28px;
+	width: 70px;
+	text-align: center;
+	text-transform: capitalize;
+}
+
+@mixin sidechain-health($color) {
+	@include font-body16($color, 600);
+	text-transform: capitalize;
+	padding: 4px 8px;
+	border-radius: 28px;
+	width: 100px;
+	text-align: center;
+}
+
+// ROLES
+@mixin role-table-access($color, $bgColor) {
+	@include flex-left();
+
+	&:before {
+		display: inline-block;
+		content: "";
+		width: 18px;
+		height: 18px;
+		border-radius: 18px;
+		border: solid 4px $color;
+		background-color: $bgColor;
+		margin-right: 4px;
+	}
+}

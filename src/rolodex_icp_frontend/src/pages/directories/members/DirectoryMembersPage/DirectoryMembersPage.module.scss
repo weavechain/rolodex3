@@ -1,0 +1,51 @@
+@import "../../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.content {
+		@include page-content(flex-start);
+		padding-left: 0;
+		padding-right: 0;
+		padding-bottom: 200px;
+
+		.members {
+			width: 100%;
+
+			.row {
+				@include flex-left();
+				text-decoration: none;
+
+				width: 100%;
+				min-height: 60px;
+				padding: 10px;
+
+				border-top: 0.333px solid $gray-90;
+				background-color: #000;
+				cursor: pointer;
+
+				&:hover {
+					opacity: 0.75;
+				}
+
+				.info {
+					flex: 1;
+
+					.name {
+						@include font-body14($white-100);
+						@include ellipsis();
+					}
+
+					.dateCreated {
+						@include font-body14($gray-60);
+					}
+				}
+
+				.contact {
+					margin-left: 16px;
+					margin-right: 16px;
+				}
+			}
+		}
+	}
+}

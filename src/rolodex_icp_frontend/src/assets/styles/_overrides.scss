@@ -1,0 +1,100 @@
+// CONTAINER
+.container-fluid {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+// PROGRESS
+.progress {
+	border-radius: 28px;
+
+	.progress-bar {
+		@include box-shadow(none);
+		background-color: $green-100 !important;
+		height: 16px !important;
+	}
+
+	.progress-bar.bg-info {
+		background-color: $blue-60 !important;
+	}
+
+	.progress-bar.bg-warning {
+		background-color: $yellow !important;
+	}
+
+	.progress-bar.bg-danger {
+		background-color: $danger !important;
+	}
+
+	.progress-sm {
+		height: 1rem;
+	}
+
+	.progress-xs {
+		height: 5px;
+	}
+}
+
+/* MODAL */
+.modal.fade.show {
+	//background-color: rgba(120, 144, 156, 0.4);
+	background: rgba(26, 28, 33, 0.25);
+	backdrop-filter: blur(2px);
+}
+
+.modal-dialog {
+	width: 400px !important;
+	max-width: 90%;
+	margin: auto;
+
+	.modal-header {
+		border-bottom: solid 1px $gray-80;
+	}
+
+	.modal-footer {
+		border-top: solid 1px $gray-80;
+	}
+
+	.modal-content {
+		background-color: $gray-90;
+
+		.modal-title {
+			color: $white-100;
+			width: 100%;
+		}
+
+		.close {
+			color: $white-100;
+		}
+	}
+}
+
+/* REACT CROP */
+.ReactCrop {
+	height: 100%;
+	max-width: 100%;
+	object-fit: contain;
+
+	.ReactCrop__image {
+		max-height: 300px;
+	}
+}
+
+// DATE PICKER
+.react-datepicker-popper {
+	z-index: 100;
+}
+
+// PIE CHARTS
+.recharts-text {
+	@include font-body10($white-100);
+	font-weight: 600;
+}
+
+.recharts-percent {
+	@include font-body10($white-100);
+
+	border-radius: 2px;
+	border: 0.793px solid $green-darkest;
+	background: $green-darkest;
+}

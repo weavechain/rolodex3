@@ -1,0 +1,119 @@
+.alert {
+	border: 0;
+	border-radius: 0;
+	color: #ffffff;
+	padding: 10px 15px;
+	font-size: 14px;
+
+	.container & {
+		border-radius: 4px;
+	}
+
+	span[data-notify="icon"] {
+		font-size: 30px;
+		display: block;
+		left: 15px;
+		position: absolute;
+		top: 50%;
+		margin-top: -15px;
+	}
+
+	button.close {
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		margin-top: -13px;
+		z-index: 1033;
+		background-color: #ffffff;
+		display: block;
+		border-radius: 50%;
+		opacity: 0.4;
+		line-height: 9px;
+		width: 25px;
+		height: 25px;
+		outline: 0 !important;
+		text-align: center;
+		padding: 3px;
+		font-weight: 300;
+
+		&:hover {
+			opacity: 0.55;
+		}
+	}
+
+	.close ~ span {
+		display: block;
+		max-width: 89%;
+	}
+
+	&[data-notify="container"] {
+		padding: 10px 10px 10px 20px;
+		border-radius: $border-radius-base;
+	}
+
+	&.alert-with-icon {
+		padding-left: 65px;
+	}
+}
+
+.alert-primary {
+	background-color: $primary-bg;
+
+	.text {
+		@include font-body14($primary-color, 500);
+	}
+}
+
+.alert-info {
+	background-color: $info-bg;
+
+	.text {
+		@include font-body14($info-color, 500);
+	}
+}
+
+.alert-success {
+	background-color: $success-bg;
+
+	.text {
+		@include font-body14($success-color, 500);
+	}
+
+	.text-green {
+		@include font-body14($green-200, 500);
+		@include flex();
+
+		span {
+			margin-right: auto;
+		}
+	}
+}
+
+.alert-warning {
+	background-color: $warning-bg;
+
+	.text {
+		@include font-body14($warning-color, 500);
+	}
+}
+
+.alert-danger {
+	background-color: $danger-color;
+
+	.text {
+		@include font-body14($danger-color, 500);
+	}
+}
+
+.alert-danger,
+.alert-info,
+.alert-primary,
+.alert-success,
+.alert-warning {
+	border-radius: 4px;
+	margin-bottom: 16px;
+
+	span {
+		font-family: "Poppins-Bold";
+	}
+}

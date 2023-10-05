@@ -1,0 +1,65 @@
+@import "../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+	min-height: 100vh;
+	height: auto;
+
+	.saveText {
+		@include font-body14($green-100, 600);
+		cursor: pointer;
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.content {
+		@include page-content(flex-start);
+		flex: 1;
+		padding-top: 10px;
+
+		.skipText {
+			width: 100%;
+			@include font-body14($gray-40, 700, "Inter");
+			text-decoration-line: underline;
+			margin-top: 16px;
+			margin-bottom: 16px;
+			text-align: right;
+			cursor: pointer;
+
+			svg path {
+				fill: $gray-40;
+			}
+		}
+
+		.avatar {
+			margin-top: 25px;
+			margin-bottom: 25px;
+		}
+
+		.sectionTitle {
+			@include font-body14($white-100, 600);
+			margin-bottom: 2px;
+		}
+
+		.section {
+			width: 100%;
+			margin-bottom: 8px;
+
+			&.buttons {
+				@include flex();
+				margin-top: 12px;
+				padding-bottom: 100px;
+			}
+
+			.button {
+				@include flex();
+				width: auto;
+				padding: 12px 16px;
+				box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+				border-radius: 4px;
+			}
+		}
+	}
+}

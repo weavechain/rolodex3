@@ -1,0 +1,19 @@
+@import "../../assets/styles/app";
+
+.root {
+	@include flex-column();
+	margin-top: 16px;
+	cursor: pointer;
+
+	img {
+		width: 108px;
+		height: 108px;
+		border-radius: 108px;
+	}
+
+	p {
+		@include font-button-text($green-100);
+		text-decoration: none;
+		margin-top: 8px;
+	}
+}

@@ -1,0 +1,50 @@
+@import "../../assets/styles/app";
+
+.root {
+	display: flex;
+	width: 100%;
+	background: $gray-100;
+	border-top: 0.5px solid rgba(60, 60, 67, 0.36);
+	padding: 10px 20px;
+
+	.tab,
+	.activeTab {
+		display: flex;
+		height: 24px;
+	}
+
+	.tab {
+		position: relative;
+		flex: 1;
+		@include flex();
+
+		a {
+			@include flex();
+			@include font-body12($gray-60, 400);
+			height: 100%;
+			width: 100%;
+
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: pre;
+		}
+	}
+
+	.tab + .tab:not(.activeTab):before {
+		content: " ";
+		position: absolute;
+		border-left: solid 1px $gray-60;
+		height: 12px;
+		left: -1px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.activeTab {
+		a {
+			color: $white-color;
+			background-color: $gray-60;
+			border-radius: 7px;
+		}
+	}
+}

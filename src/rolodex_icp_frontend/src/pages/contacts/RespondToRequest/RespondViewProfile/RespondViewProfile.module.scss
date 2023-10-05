@@ -1,0 +1,14 @@
+@import "../../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.headerIcon {
+		margin-left: auto;
+	}
+
+	.content {
+		@include page-content(flex-start);
+		padding: 10px 14px;
+	}
+}

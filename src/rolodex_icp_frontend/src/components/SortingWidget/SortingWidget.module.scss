@@ -1,0 +1,38 @@
+@import "../../assets/styles/app";
+
+.root {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	padding: 17px 16px;
+	min-height: 58px;
+	//background: linear-gradient(135deg, #1a1c21 0%, #3e4d53 100%);
+
+	.label {
+		@include font-body12($gray-60, 600);
+		letter-spacing: 0.48px;
+		margin-right: 11px;
+	}
+
+	.options {
+		@include flex-left();
+
+		.option {
+			@include flex();
+			@include font-body10($gray-60);
+			padding: 4px 8px;
+			border-radius: 100px;
+			background: $gray-100;
+			cursor: pointer;
+
+			&.selected {
+				background: $green-100;
+				color: $gray-100;
+			}
+		}
+
+		.option + .option {
+			margin-left: 6px;
+		}
+	}
+}

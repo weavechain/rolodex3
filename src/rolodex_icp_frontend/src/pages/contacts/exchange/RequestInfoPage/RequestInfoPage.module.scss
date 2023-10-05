@@ -1,0 +1,53 @@
+@import "../../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.content {
+		@include page-content(flex-start);
+		padding: 0 0 100px;
+
+		.media {
+			width: 100%;
+			padding-left: 24px;
+			padding-right: 24px;
+
+			.section {
+				width: 100%;
+				margin-top: 16px;
+
+				.heading {
+					@include flex();
+					justify-content: space-between;
+
+					.title {
+						@include font-body14($green-100, 600);
+					}
+
+					.buttonAll {
+						@include font-body10($gray-100, 600);
+						height: 24px;
+						padding: 4px 8px;
+						border-radius: 100px;
+						background-color: $green-100;
+						cursor: pointer;
+					}
+				}
+
+				.note {
+					@include font-body14($gray-60, 400);
+					margin-bottom: 8px;
+				}
+			}
+
+			.fields {
+				width: 100%;
+				padding-left: 24px;
+
+				.field {
+					margin-bottom: 8px;
+				}
+			}
+		}
+	}
+}

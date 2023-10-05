@@ -1,0 +1,29 @@
+@import "../../../../../../assets/styles/app";
+
+.root {
+	width: 100%;
+	@include flex-left();
+
+	span,
+	a {
+		@include font-body16($white, 400);
+		@include ellipsis();
+		display: inline-block;
+		max-width: 90%;
+	}
+
+	&.blue {
+		span,
+		a {
+			color: $blue-100;
+			font-weight: 600;
+		}
+	}
+
+	&.restricted {
+		span,
+		a {
+			color: $gray-60;
+		}
+	}
+}

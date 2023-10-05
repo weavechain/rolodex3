@@ -1,0 +1,30 @@
+@import "../../assets/styles/app";
+
+.root {
+	position: relative;
+
+	.title {
+		@include font-header4($white-100);
+		margin-bottom: 2px;
+
+		&.error {
+			color: $danger !important;
+		}
+	}
+
+	.label {
+		@include font-body12($gray-60);
+		font-style: italic;
+		margin-top: 2px;
+
+		span {
+			display: inline-block;
+			font-family: "Poppins-Bold";
+		}
+	}
+
+	.errorMessage {
+		@include font-body12($danger);
+		margin-top: 4px;
+	}
+}

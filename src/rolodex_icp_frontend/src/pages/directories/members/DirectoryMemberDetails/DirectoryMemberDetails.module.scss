@@ -1,0 +1,55 @@
+@import "../../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.headerIcon {
+		margin-left: auto;
+	}
+
+	.content {
+		@include page-content(flex-start);
+		padding: 16px 0;
+
+		.section {
+			width: 100%;
+			margin-bottom: 8px;
+
+			.label {
+				@include font-body14($gray-40, 600);
+				text-transform: capitalize;
+			}
+
+			.value {
+				@include font-body16($white-100, 400);
+				@include ellipsis();
+
+				&.name {
+					text-align: center;
+					margin-top: 8px;
+
+					span {
+						margin-right: 4px;
+					}
+				}
+
+				a {
+					@include font-body16($white-100, 400);
+					text-transform: none;
+					text-decoration: none;
+					max-width: 99%;
+
+					&:hover {
+						cursor: pointer;
+					}
+				}
+
+				&.blue a {
+					color: $blue-100;
+					font-weight: 600;
+					@include ellipsis();
+				}
+			}
+		}
+	}
+}

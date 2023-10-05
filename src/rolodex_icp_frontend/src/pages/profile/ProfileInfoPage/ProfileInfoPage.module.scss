@@ -1,0 +1,68 @@
+@import "../../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.content {
+		@include page-content(flex-start);
+
+		.infoCard {
+			width: 100%;
+			text-align: center;
+			margin-top: 20px;
+			margin-bottom: 20px;
+			padding: 8px;
+
+			background: #2e373c;
+			box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+			border-radius: 4px;
+
+			.text {
+				@include font-body14($white-100);
+				font-weight: 400;
+			}
+
+			.value {
+				@include font-body14($green-100);
+			}
+		}
+
+		.textContainer {
+			width: 100%;
+			margin-bottom: 20px;
+			padding: 8px;
+
+			.title {
+				@include font-body14($green-100);
+				margin-bottom: 8px;
+			}
+
+			.infoLine {
+				@include flex-left();
+				margin-bottom: 8px;
+
+				span {
+					@include font-body14($white-smoke);
+					font-weight: 400;
+					margin-left: 8px;
+				}
+			}
+
+			.buttons {
+				.button {
+					@include flex();
+					padding: 12px 16px;
+					width: 111px;
+					box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+				}
+			}
+		}
+
+		.buttons {
+			.button {
+				@include flex();
+				width: 111px;
+			}
+		}
+	}
+}

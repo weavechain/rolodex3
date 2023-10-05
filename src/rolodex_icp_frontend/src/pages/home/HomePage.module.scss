@@ -1,0 +1,54 @@
+@import "../../assets/styles/app";
+
+.root {
+	@include page-layout();
+
+	.header {
+		height: 66px;
+		padding: 14px 16px 15px 16px;
+		border-top-right-radius: 10px;
+		border-top-left-radius: 10px;
+
+		.title {
+			@include font-header1($white-100);
+			width: 100%;
+		}
+	}
+
+	.content {
+		@include page-content(flex-start);
+		padding-left: 0;
+		padding-right: 0;
+
+
+		.avatarContainer {
+			margin-top: 16px;
+			margin-bottom: 44px;
+			cursor: pointer;
+
+			p {
+				@include font-button-text($green-100, "Poppins", 600);
+				text-decoration: none;
+				letter-spacing: 0.64px;
+				margin-top: 8px;
+				text-align: center;
+			}
+		}
+
+		.directories {
+			padding-left: 20px;
+			width: 100%;
+		}
+
+		.buttons {
+			padding-left: 18px;
+			padding-right: 18px;
+			width: 100%;
+
+			.sectionTitle {
+				@include font-header2($white-100, 700);
+				margin-bottom: 16px;
+			}
+		}
+	}
+}

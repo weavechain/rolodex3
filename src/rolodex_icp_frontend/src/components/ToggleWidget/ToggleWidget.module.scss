@@ -1,0 +1,32 @@
+@import "../../assets/styles/app";
+
+.root {
+	@include flex();
+	height: 28px;
+	width: 118px;
+	padding: 2px;
+	background: $gray-100;
+	border-radius: 9px;
+
+	.option {
+		@include flex();
+		height: 100%;
+		flex: 1;
+		border-radius: 7px;
+		background-color: transparent;
+		cursor: pointer;
+
+		span.text {
+			@include font-body12($gray-60);
+			text-transform: capitalize;
+		}
+
+		&.selected {
+			background: $gray-60;
+
+			span.text {
+				color: $white-100;
+			}
+		}
+	}
+}

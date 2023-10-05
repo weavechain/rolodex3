@@ -1,0 +1,117 @@
+//== App Colors
+
+$dark: #000000;
+
+$blue-60: #96d0fb;
+$blue-100: #50b0f9;
+$blue-dark: #289ef8;
+$blue-darkest: #289ef8;
+
+$gray-2: #fbfbfb;
+$gray-5: #f4f4f4;
+$gray-10: #e8e8e9;
+$gray-15: #dee2e6;
+$gray-20: #d9dbe1;
+$gray-40: #a3a4a6;
+$gray-60: #78909c;
+$gray-70: #2d3540;
+$gray-80: #3e4d53;
+$gray-90: #2E373C;
+$gray-100: #1a1c21;
+$gray-200: #1c1c1e;
+$gray-700: #374151;
+$gray-900: #212529;
+
+$green-60: #97f1e1;
+$green-100: #52e8cd;
+$green-dark: #1cd0af;
+$green-200: #155724;
+$green-darkest: #17ad92;
+
+$new-blue: #1dc7ea;
+$new-dark-blue: #1f77d0;
+$new-green: #87cb16;
+$new-orange: #ffa534;
+$new-purple: #9368e9;
+
+$white: #ffffff;
+$white-100: #FFF;
+$white-smoke: #f5fafe;
+$white-color: #ffffff;
+
+$yellow: #fff3c8;
+$yellow-100: #faff07;
+
+$info-color: $green-dark !default;
+$info-bg: $green-dark !default;
+$default-color: #888888 !default;
+$default-states-color: #777777 !default;
+$info-states-color: lighten($info-color, 0) !default;
+
+// Sizes
+$height-base: 40px !default;
+$margin: 16px;
+
+// Alerts
+$primary-color: #004085 !default;
+$primary-bg: #cce5ff !default;
+
+$info-color: #0c5460 !default;
+$info-bg: #d1ecf1 !default;
+
+$success-color: #155724 !default;
+$success-bg: #d4edda !default;
+
+$warning-color: #721c24 !default;
+$warning-bg: #f8d7da !default;
+
+$danger: #dc3545;
+$danger-dark: #b30000;
+$bad: #d07567;
+$danger-color: #fb404b !default;
+
+$border-thin: 1px !default;
+$border-thick: 2px !default;
+$transparent-bg: transparent !default;
+
+$border-radius-base: 4px !default;
+$padding-base-vertical: 8px !default;
+$padding-base-horizontal: 16px !default;
+
+$link-color: $blue-dark;
+
+/* =============================== FONTS ========================================= */
+$font-family-base: "Poppins";
+$font-weight-thin: 300;
+$font-weight-normal: 400;
+$font-weight-semi-bold: 600;
+$font-weight-bold: 700;
+
+$glyphicons-halflings-include-bonus: false !default;
+$glyphicons-halflings-class-prefix: glyphicon !default;
+$glyphicons-halflings-font-base-size: 14px !default;
+
+$glyphicons-halflings-font-path: "../fonts/glyphicons" !default;
+
+$state-success-text: $success-color !default;
+$state-success-bg: lighten($success-color, 70%) !default;
+
+$state-info-text: $info-color !default;
+$state-info-bg: lighten($info-color, 70%) !default;
+
+$state-warning-text: $warning-color !default;
+$state-warning-bg: lighten($warning-color, 70%) !default;
+
+$state-danger-text: $danger-color !default;
+$state-danger-bg: lighten($danger-color, 70%) !default;
+
+//== Iconography
+$icon-font-path: "../../node_modules/bootstrap-sass/assets/fonts/bootstrap/"; // overriding bootstrap variable
+
+/*
+  * Media queries breakpoints
+  * ======================================================================== */
+$screen-xs-min: 480px; /* Extra small screen / phone */
+$screen-sm-min: 768px; /* Small screen / tablet */
+$screen-md-min: 992px; /* Medium screen / desktop */
+$screen-lg-min: 1200px; /* Large screen / wide desktop */

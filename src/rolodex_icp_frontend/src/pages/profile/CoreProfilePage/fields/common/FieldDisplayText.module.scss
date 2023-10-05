@@ -1,0 +1,37 @@
+@import "../../../../../assets/styles/app";
+
+.root {
+	width: 100%;
+	@include flex-left();
+
+	span,
+	a {
+		@include font-body16($white, 400);
+		@include ellipsis();
+		display: inline-block;
+		max-width: 90%;
+	}
+
+	&.blue {
+		span,
+		a {
+			color: $blue-100;
+			font-weight: 600;
+		}
+	}
+
+	.icon {
+		margin-left: 10px;
+	}
+
+	&.empty {
+		@include flex-left();
+		height: 24px;
+		padding-left: 24px;
+
+		.addText {
+			@include font-body16($green-100, 600);
+			margin-left: 10px;
+		}
+	}
+}
