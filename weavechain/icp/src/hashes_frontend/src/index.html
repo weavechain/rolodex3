@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Hashes</title>
+    <base href="/" />
+    <link rel="icon" href="favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <main>
+      <img src="logo2.svg" alt="DFINITY logo" />
+      <br />
+      <br />
+      <form id="f_store" action="#">
+        <label for="id">ID: &nbsp;</label>
+        <input id="id" alt="ID" type="text" />
+        <label for="hash">Hash: &nbsp;</label>
+        <input id="hash" alt="Hash" type="text" />
+        <label for="reply">Reply: &nbsp;</label>
+        <input id="reply" alt="Reply" type="text" disabled />
+        <button type="submit">Store</button>
+      </form>
+      <section id="s_store"></section>
+      <br />
+      <br />
+      <form id="f_read" action="#">
+        <textarea id="hashes" alt="Hashes" rows="10" cols="80" disabled></textarea>
+        <button type="submit">Query</button>
+      </form>
+      <section id="s_read"></section>
+    </main>
+  </body>
+</html>

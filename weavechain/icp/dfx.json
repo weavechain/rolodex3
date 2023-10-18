@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "hashes_backend": {
+      "main": "src/hashes_backend/main.mo",
+      "type": "motoko"
+    },
+    "hashes_frontend": {
+      "dependencies": [
+        "hashes_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/hashes_frontend/src/index.html"
+      },
+      "source": [
+        "src/hashes_frontend/assets",
+        "dist/hashes_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops sources"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
