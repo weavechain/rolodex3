@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 // ACTIONS
 import { initDirectories } from "../_redux/actions/directories";
-import { initContacts } from "../_redux/actions/contacts";
 
 import s from "./RoloDexApp.module.scss";
 
@@ -26,15 +25,12 @@ export default function RoloDexApp() {
 	const meta = useMetaMask();
 	const dispatch = useDispatch();
 
-	const { CORE_DIRECTORY } = useSelector((state) => state.directories);
-	const profile = CORE_DIRECTORY?.profile;
+	const reduxUser = useSelector(state => state.user);
 
-	const hasProfile = !!profile;
-	const isLoggedIn = !!meta.account || hasProfile;
+	const isLoggedIn = !!meta.account || reduxUser.user;
 
 	useEffect(() => {
 		dispatch(initDirectories());
-		dispatch(initContacts());
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -86,7 +82,7 @@ export default function RoloDexApp() {
 
 				<PrivateRoute
 					isLoggedIn={isLoggedIn}
-					hasProfile={hasProfile}
+					hasProfile={true}
 					path={AppRoutes.home}
 					render={() => <HomePage user={user} />}
 				/>

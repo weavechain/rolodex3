@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import cx from "classnames";
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router";
@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { pluralize } from "../../../helpers/Utils";
 
 // ACTIONS
-import { setCurrentDirectory } from "../../../_redux/actions/directories";
+import { getMemberCountByDirectoryId, getMembersByDirectoryId, setCurrentDirectory, setUserProfileForDirectory } from "../../../_redux/actions/directories";
 
 import s from "./DirectoryDetailsPage.module.scss";
 
@@ -28,33 +28,88 @@ export default function DirectoryDetailsPage(props) {
 
 	const comingFromOnboarding = history.location.state?.from === "onboarding";
 
-	const {
-		directories = [],
-		CORE_DIRECTORY,
-		CORE_PROFILE,
-	} = useSelector((state) => state.directories);
+	const { directories = [], } = useSelector((state) => state.directories);
+	const loggedInUser = useSelector(state => state.user);
 	const directory = directories.find((d) => d.id === id);
+
+	let [pieData, setPieData] = useState(null);
+
+	useEffect(() => {
+		getMembersByDirectoryId(directory.id)
+			.then(members => {
+				let membersCount = members.length;
+
+				// TODO: 
+
+				let countNetworking = 0;
+				let countInvestors = 0;
+				let countCollaborators = 0;
+				let countInterests = 0;
+
+				for (let i = 0; i < membersCount; i++) {
+					if (!members[i]?.lookingFor)
+						continue;
+					let currLookingFor = JSON.parse(members[i].lookingFor).value;
+					if (currLookingFor.includes("Networking"))
+						countNetworking++;
+					if (currLookingFor.includes("Investors"))
+						countInvestors++;
+					if (currLookingFor.includes("Collaborators"))
+						countCollaborators++;
+					countInterests += currLookingFor.length;
+				}
+
+				let _data = [
+					{
+						name: "Networking", value: countNetworking / countInterests * 100
+					},
+					{
+						name: "Investors", value: countInvestors / countInterests * 100
+					},
+					{
+						name: "Collaborators", value: countCollaborators / countInterests * 100
+					},
+				];
+				setPieData(_data);
+			})
+	}, []);
+
+	useEffect(() => {
+		const userId = loggedInUser.user
+			? loggedInUser.user.id // user existed in DB
+			: undefined; // user doesn't exist, clicked "Get Started"
+		dispatch(setUserProfileForDirectory(userId, id))
+			.then(r => setHasJoined(r));
+	}, []);
+
+	let [hasJoined, setHasJoined] = useState(false);
+	let [membersCount, setMembersCount] = useState(0);
+
+	useEffect(() => {
+		if (!directory)
+			return;
+		getMemberCountByDirectoryId(directory.id)
+			.then(c => setMembersCount(c));
+	}, []);
+
 
 	if (!directory) {
 		history.push(AppRoutes.welcome);
 		return null;
 	}
 
-	const hasJoined =
-		!!directory.profile ||
-		(CORE_DIRECTORY?.profile && directory.id === CORE_DIRECTORY?.id);
-
-	const membersCount = directory.members?.length;
-
 	// ------------------------------------- METHODS -------------------------------------
 	const joinDirectory = () => {
 		dispatch(setCurrentDirectory(directory)).then(() => {
-			history.push(!CORE_PROFILE ? AppRoutes.profileInfo : AppRoutes.profile);
+			history.push(loggedInUser ? AppRoutes.profileInfo : AppRoutes.profile);
 		});
 	};
 
 	const goBack = () => {
-		history.push(comingFromOnboarding ? AppRoutes.home : AppRoutes.directories);
+		if (comingFromOnboarding)
+			history.push(AppRoutes.home);
+		else
+			history.goBack()
 	};
 
 	return (
@@ -83,7 +138,7 @@ export default function DirectoryDetailsPage(props) {
 						[s.whiteBg]: directory.name === "EthGlobal Paris 2023",
 					})}
 				>
-					<img src={directory.icon} alt="..." />
+					<img src={`data:image/svg+xml;utf8,${encodeURIComponent(directory.icon_svg)}`} alt="..." />
 				</div>
 
 				<div className={s.info}>
@@ -118,7 +173,11 @@ export default function DirectoryDetailsPage(props) {
 					</div>
 				</div>
 
-				<SimplePieChart data={directory.lookingForAgg} title="Looking for..." />
+				{
+					pieData !== null
+						? <SimplePieChart pieData={pieData} title="Looking for..." />
+						: null
+				}
 			</div>
 
 			<Footer

@@ -25,13 +25,14 @@ export default function ShareInfo() {
 
 	const { CURRENT_DIRECTORY } = useSelector((state) => state.directories);
 	const { CURRENT_CONTACT } = useSelector((state) => state.contacts);
+	const user = useSelector(state => state.user.user);
 
 	useEffect(() => {
-		setUpdatedProfile(CURRENT_CONTACT);
+		setUpdatedProfile(user);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	if (!CURRENT_CONTACT) {
+	if (!user) {
 		history.push(AppRoutes.contacts);
 		return null;
 	}
@@ -43,7 +44,7 @@ export default function ShareInfo() {
 		setShowDialog(true);
 
 		// Share info willingly
-		dispatch(shareInfoVoluntarily(updatedProfile));
+		dispatch(shareInfoVoluntarily(CURRENT_CONTACT.id, user.id, CURRENT_CONTACT.wallet.value, updatedProfile));
 	};
 
 	return (

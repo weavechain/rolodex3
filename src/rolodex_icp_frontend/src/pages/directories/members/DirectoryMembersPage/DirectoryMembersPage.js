@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
-import { setCurrentContact } from "../../../../_redux/actions/contacts";
+import { loadMembersOfDirectory, setCurrentContact } from "../../../../_redux/actions/contacts";
 
 import s from "./DirectoryMembersPage.module.scss";
 
@@ -14,6 +14,9 @@ import SortingWidget from "../../../../components/SortingWidget/SortingWidget";
 import FavoriteIcon from "../../../../components/icons/FavoriteIcon";
 import Footer from "../../../../components/Footer/Footer";
 import RoloSearch from "../../../../components/RoloSearch/RoloSearch";
+import { setUserProfileForDirectory } from "../../../../_redux/actions/directories";
+import { assureProfileIsUiFormat } from "../../../../_redux/reducers/user";
+import { getListNameForAccount } from "../../../../helpers/Utils";
 
 export default function DirectoryMembersPage() {
 	const dispatch = useDispatch();
@@ -24,12 +27,23 @@ export default function DirectoryMembersPage() {
 
 	const { directories = [] } = useSelector((state) => state.directories);
 	const directory = directories.find((d) => d.id === id);
-	const profile = directory?.profile;
-	const hasJoined = !!profile;
-	const allMembers = directory?.members || [];
+	const user = useSelector(state => state.user.user);
+	const [hasJoined, setHasJoined] = useState(false);
 
 	useEffect(() => {
-		setMembers(directory?.members || []);
+		if (!user)
+			return;
+
+		const userId = user.id;
+		dispatch(setUserProfileForDirectory(userId, id))
+			.then(r => setHasJoined(r));
+	}, []);
+
+	useEffect(() => {
+		// TODO: load members from DB based on directory id
+		loadMembersOfDirectory(id)
+			.then(m => m.map(x => assureProfileIsUiFormat(x)))
+			.then(m => setMembers(m));
 	}, [directory]);
 
 	// ------------------------------------- METHODS -------------------------------------
@@ -69,7 +83,7 @@ export default function DirectoryMembersPage() {
 				<SortingWidget
 					showContacts
 					onUpdate={setMembers}
-					members={allMembers}
+					members={members}
 				/>
 
 				<div className={s.members}>
@@ -80,9 +94,9 @@ export default function DirectoryMembersPage() {
 							className={s.row}
 						>
 							<div className={s.info}>
-								<div className={s.name}>{m.name.displayText}</div>
+								<div className={s.name}>{getListNameForAccount(m)}</div>
 								<div className={s.dateCreated}>
-									Member since {m.date_created}
+									Member since {new Date(Number(m.joinTs)).toISOString().split('T')[0]}
 								</div>
 							</div>
 

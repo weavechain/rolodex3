@@ -3,7 +3,7 @@ import HmacSHA256 from "crypto-js/hmac-sha256";
 import Base64 from "crypto-js/enc-base64";
 import { KEYUTIL } from "jsrsasign";
 import { Buffer } from "buffer";
-import { binary_to_base58, base58_to_binary } from 'base58-js'
+import { base58_to_binary } from 'base58-js'
 import elliptic from "elliptic";
 
 const EC = elliptic.ec;

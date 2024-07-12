@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import s from "./ContactsReceivedPage.module.scss";
 
@@ -11,14 +11,35 @@ import InfoCard from "../../../components/InfoCard/InfoCard";
 import SortingWidget from "../../../components/SortingWidget/SortingWidget";
 import ContactsList from "../../../components/ContactsList/ContactsList";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
+import { loadGivenToMe } from "../../../_redux/actions/contacts";
 
+// Received
 export default function ContactsReceivedPage() {
+	const dispatch = useDispatch();
+
+	const reduxContacts = useSelector(state => state.contacts);
+	const currentUser = useSelector(state => state.user.user);
 	const [contacts, setContacts] = useState([]);
-	const { received: allContacts } = useSelector((state) => state.contacts);
 
 	useEffect(() => {
-		setContacts(allContacts);
-	}, [allContacts]);
+		dispatch(loadGivenToMe(currentUser.id));
+	}, []);
+
+	useEffect(() => {
+		if (!reduxContacts || !reduxContacts.givenToMe)
+			return;
+		const receivedData = reduxContacts.givenToMe.map(d => JSON.parse(d.shared_data));
+		if (reduxContacts.contacts) {
+			receivedData.forEach(recData => {
+				reduxContacts.contacts.forEach(contact => {
+					if (contact.id === recData.id) {
+						recData.directories = contact.directories;
+					}
+				})
+			})
+		}
+		setContacts(receivedData);
+	}, [reduxContacts]);
 
 	return (
 		<div className={s.root}>
@@ -49,13 +70,13 @@ export default function ContactsReceivedPage() {
 					description="Contacts who you have shared information with."
 				/>
 
-				<SortingWidget onUpdate={setContacts} members={allContacts} />
+				<SortingWidget onUpdate={setContacts} members={contacts} />
 				<ContactsList contacts={contacts} showNewEntries />
 			</div>
 
 			<Footer
 				page={AppRoutes.contacts}
-				search={<RoloSearch data={allContacts} setData={setContacts} />}
+				search={<RoloSearch data={contacts} setData={setContacts} />}
 			/>
 		</div>
 	);

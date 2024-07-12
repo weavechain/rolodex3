@@ -14,31 +14,48 @@ const OPTIONS = [
 
 export default function BirthdayComputationWidget({
 	profile,
-	updateModel = () => {},
+	updateModel = () => { },
 	titleClassName = "",
 }) {
-	const [format, setFormat] = useState(OPTIONS[0].value);
-	const [displayText, setDisplayText] = useState(profile?.displayText?.value);
+	const [format, setFormat] = useState(profile?.birthday?.displayText && profile?.birthday?.displayText.includes(',') ? OPTIONS[1].value : OPTIONS[0].value);
+	const [displayText, setDisplayText] = useState("");
 
 	// INIT
 	useEffect(() => {
-		if (!profile || !format) return;
+		if (!profile || !profile.birthday) return;
 
-		const birth = profile.birthday?.value;
-		const dt = format === "hide" ? displayText : moment(birth).format(format);
+		if (profile.birthday.show === "false" || profile.birthday.show === false) {
+			setFormat(OPTIONS[2].value);
+		} else {
+			setFormat(profile.birthday.displayText?.includes(",") ? OPTIONS[1].value : OPTIONS[0].value);
+		}
+		setDisplayText(profile.birthday?.displayText);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [profile]);
 
-		if (dt) {
+	useEffect(() => {
+		if (!profile.birthday?.value)
+			return;
+
+		let dt;
+		if (format === "hide") {
+			dt = profile.birthday.displayText;
 			setDisplayText(dt);
+		} else {
 
-			updateModel({
-				show: format !== "hide",
-				value: profile.birthday?.value,
-				displayText,
-			});
+			dt = moment(profile.birthday.value).format(format);
+			setDisplayText(dt);
 		}
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [format]);
+		let newBirthdayField = {
+			show: format !== "hide",
+			value: profile.birthday?.value,
+			displayText: dt,
+		};
+
+		if (newBirthdayField !== profile.birthday)
+			updateModel(newBirthdayField);
+	}, [format])
 
 	return (
 		<div className={s.root}>

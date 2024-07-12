@@ -24,22 +24,21 @@ export default function WelcomePage() {
 	const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 	const [downloadStarted, setDownloadStarted] = useState(false);
 
-	const { directories } = useSelector((state) => state.directories);
+	const { directories } = useSelector(state => state.directories);
 	const showDownloadMetamask = status === "unavailable";
 
-	const { CORE_DIRECTORY } = useSelector((state) => state.directories);
-	const profile = CORE_DIRECTORY?.profile;
+	const profile = useSelector(state => state.user);
 
-	if (profile) {
-		setTimeout(() => {
+	if (profile.user) {
+		// setTimeout(() => {
 			history.push(AppRoutes.home);
-		}, 0);
+		// }, 0);
 		return null;
 	}
 
 	// ------------------------------------- METHODS -------------------------------------
 	const connectToMetamask = () => {
-		connect();
+		// connect();
 		history.push(AppRoutes.metamask);
 	};
 
@@ -83,7 +82,7 @@ export default function WelcomePage() {
 				</div>
 
 				<RoloButton
-					text="Get Started"
+					text="Join Directory"
 					onClick={joinDirectory}
 					className={s.button}
 				/>

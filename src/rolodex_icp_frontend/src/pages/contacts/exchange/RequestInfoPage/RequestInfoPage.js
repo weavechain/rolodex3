@@ -3,7 +3,7 @@ import cx from "classnames";
 import { useHistory, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
-import { sendNewDataRequest } from "../../../../_redux/actions/contacts";
+import { loadLatestShare, sendNewDataRequest } from "../../../../_redux/actions/contacts";
 import { DISPLAY_FIELDS } from "../../../../helpers/AppHelper";
 
 import s from "./RequestInfoPage.module.scss";
@@ -26,9 +26,29 @@ export default function RequestInfoPage() {
 
 	const { id } = useParams() || {};
 
-	const { CURRENT_DIRECTORY } = useSelector((state) => state.directories);
-	const profile = CURRENT_DIRECTORY?.profile;
-	const { CURRENT_CONTACT } = useSelector((state) => state.contacts);
+	const { CURRENT_DIRECTORY } = useSelector(state => state.directories);
+	const profile = useSelector(state => state.user).user;
+	const { CURRENT_CONTACT } = useSelector(state => state.contacts);
+
+	let latestShare = useSelector(state => state.contacts.latestShare);
+	let [enrichedContact, setEnrichedContact] = useState(CURRENT_CONTACT);
+
+	useEffect(() => {
+		dispatch(loadLatestShare(CURRENT_CONTACT.id, profile.id));
+	}, []);
+
+	useEffect(() => {
+		if (!latestShare)
+			return;
+
+		for (var propertyName in CURRENT_CONTACT) {
+			if (latestShare[propertyName]?.show === true || latestShare[propertyName]?.show === 'true') {
+				CURRENT_CONTACT[propertyName] = latestShare[propertyName];
+			}
+		}
+		setEnrichedContact(CURRENT_CONTACT);
+	}, [latestShare])
+
 	const displayFields = DISPLAY_FIELDS.filter((df) => df.key !== "directories");
 
 	useEffect(() => {
@@ -37,7 +57,7 @@ export default function RequestInfoPage() {
 			let selected = {};
 			let shared = [];
 			displayFields.forEach(({ key }) => {
-				if (!!profile[key]?.show) {
+				if (enrichedContact[key] && (enrichedContact[key].show === 'true' || enrichedContact[key].show === true)) {
 					shared.push(key);
 					selected[key] = true;
 				}
@@ -47,14 +67,14 @@ export default function RequestInfoPage() {
 			setAlreadyShared(shared);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [profile]);
+	}, [profile, enrichedContact]);
 
 	if (!profile) {
 		history.push(AppRoutes.home);
 		return null;
 	}
 
-	const name = CURRENT_CONTACT?.nickname?.value;
+	const name = enrichedContact?.nickname?.value;
 
 	// ------------------------------------- METHODS -------------------------------------
 	const requestInfo = () => {
@@ -68,9 +88,9 @@ export default function RequestInfoPage() {
 		dispatch(
 			sendNewDataRequest({
 				...profile,
-				requestor: profile, // TODO: dummy for testing
+				requestorId: profile.id,
+				requesteeId: CURRENT_CONTACT.id,
 				fields: requestedFields,
-				directories: [CURRENT_DIRECTORY.name],
 			})
 		);
 	};

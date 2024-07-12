@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import s from "./DirectoryProfilePage.module.scss";
 
@@ -12,16 +12,25 @@ import ProfileViewWidget from "../../../components/ProfileViewWidget/ProfileView
 import RoloButton from "../../../components/RoloButton/RoloButton";
 import LeaveDirectoryDialog from "../../../components/LeaveDirectoryDialog/LeaveDirectoryDialog";
 import PencilIcon from "../../../components/icons/PencilIcon";
+import { setUserProfileForDirectory } from "../../../_redux/actions/directories";
 
 export default function DirectoryProfilePage() {
 	const history = useHistory();
 	const { id } = useParams() || {};
+	const dispatch = useDispatch();
 
 	const [showDialog, setShowDialog] = useState(false);
 
+	let loggedInUser = useSelector(state => state.user.user);
+
 	const { directories = [] } = useSelector((state) => state.directories);
 	const directory = directories.find((d) => d.id === id);
-	const hasJoined = !!directory?.profile;
+	useEffect(() => {
+		dispatch(setUserProfileForDirectory(loggedInUser.id, id))
+			.then(r => setHasJoined(r));
+	}, []);
+
+	let [hasJoined, setHasJoined] = useState(false);
 
 	if (!directory) {
 		history.push(AppRoutes.home);
@@ -62,7 +71,7 @@ export default function DirectoryProfilePage() {
 			) : null}
 
 			<div className={s.content}>
-				<ProfileViewWidget profile={directory?.profile} directory={directory} />
+				<ProfileViewWidget profile={loggedInUser} directory={directory} />
 
 				<div className={s.buttons}>
 					<RoloButton

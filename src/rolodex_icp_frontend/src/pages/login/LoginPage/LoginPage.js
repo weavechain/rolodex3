@@ -17,23 +17,22 @@ import AppRoutes from "../../../helpers/AppRoutes";
 export default function LoginPage() {
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const [email, setEmail] = useState("");
+	const [email, setEmail] = useState("ko@bold.iz");
 	const [isMandatory] = useState(true);
 	const [emailWasSent, setEmailWasSent] = useState(false);
 
-	const { token } = useParams() || {};
+	const { urlEmail, urlToken } = useParams() || {};
 	// /const { user } = useSelector((state) => state.user);
 
 	// MAGIC LINK DETECTION
 	useEffect(() => {
 
-		if (token) {
-			dispatch(loadUserFromMagicLink(token)).then((hasProfile) => {
-				history.push(hasProfile ? AppRoutes.home : AppRoutes.profileInfo);
-			});
+		if (urlToken) {
+			dispatch(loadUserFromMagicLink(urlEmail, urlToken))
+				.then(user => history.push(user ? AppRoutes.home : AppRoutes.profileInfo));
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [token]);
+	}, [urlToken]);
 
 	// ------------------------------------- METHODS -------------------------------------
 	const sendLoginLink = () => {

@@ -13,10 +13,10 @@ export const showMetamaskLogin = isMobile
 
 export const isLocalhost = Boolean(
 	window.location.hostname === "localhost" ||
-		window.location.hostname === "[::1]" ||
-		window.location.hostname.match(
-			/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-		)
+	window.location.hostname === "[::1]" ||
+	window.location.hostname.match(
+		/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+	)
 );
 
 export const hasItems = (list) => {
@@ -95,13 +95,46 @@ export const formatBytes = (bytes, decimals = 2) => {
 
 // ------------------------------------- PROFILE -------------------------------------
 export const getProfileInfo = (data, key, empty = "") => {
-	return data && data[key] ? data[key].value : empty;
+	if (!data || !data[key]) {
+		return empty;
+	}
+	if (data[key].value) {
+		return data[key].value;
+	}
+	return data[key];
 };
 
 // ------------------------------------- FOR DUMMY DATA -------------------------------------
 export const randomBoolFlag = () => {
 	return Math.round(Math.random() * 10) % 2 === 0;
 };
+
+export const getListNameForAccount = (account) => {
+	if (account.nickname) {
+		if (account.nickname.value) {
+			return account.nickname.value;
+		}
+		return account.nickname;
+	}
+
+	let name = "";
+	if (account.firstName.value)
+		name = name + account.firstName.value + " ";
+	if (account.lastName.value)
+		name = name + account.lastName.value;
+	return name === "" ? "noname" : name;
+};
+
+export const stringHashCode = (str) => {
+	var hash = 0, i, chr;
+	if (str.length === 0) return hash;
+	for (i = 0; i < str.length; i++) {
+		chr = str.charCodeAt(i);
+		hash = ((hash << 5) - hash) + chr;
+		hash |= 0; // Convert to 32bit integer
+	}
+	return hash;
+}
 
 // ------------------------------------- MEDIA -------------------------------------
 
@@ -115,6 +148,7 @@ const Utils = {
 	now,
 	pluralize,
 	randomBoolFlag,
+	stringHashCode,
 	getProfileInfo,
 	showMetamaskLogin,
 };

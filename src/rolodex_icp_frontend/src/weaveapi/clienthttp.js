@@ -55,7 +55,6 @@ class ClientHttp {
     }
 
     get(call) {
-        console.log(this.apiUrl + "/" + this.version + "/" + call)
         return fetch(this.apiUrl + "/" + this.version + "/" + call, {
             method: "GET"
         }).then((response) => {
@@ -134,7 +133,7 @@ class ClientHttp {
     }
 
     sigKey(account = null) {
-        return account ? this.post("sig_key",  JSON.stringify({ "account": account }), null) : this.get("sig_key");
+        return account ? this.post("sig_key", JSON.stringify({ "account": account }), null) : this.get("sig_key");
     }
 
     signString(toSign, iv) {
@@ -212,13 +211,13 @@ class ClientHttp {
     }
 
     terms(session, options) {
-        return this.authPost(session, "terms",  {
+        return this.authPost(session, "terms", {
             "options": options.toJson()
         });
     }
 
     createTable(session, scope, table, createOptions) {
-        return this.authPost(session, "create",  {
+        return this.authPost(session, "create", {
             "scope": scope,
             "table": table,
             "options": createOptions.toJson()
@@ -226,7 +225,7 @@ class ClientHttp {
     }
 
     dropTable(session, scope, table, dropOptions) {
-        return this.authPost(session, "drop",  {
+        return this.authPost(session, "drop", {
             "scope": scope,
             "table": table,
             "options": dropOptions.toJson()
@@ -251,8 +250,8 @@ class ClientHttp {
                 return buildAndSendMessage();
             });
         } else {
-	        return buildAndSendMessage();
-    	}
+            return buildAndSendMessage();
+        }
     }
 
     read(session, scope, table, filter, readOptions) {
@@ -1059,7 +1058,7 @@ class ClientHttp {
 
         const toSign = session.organization
             + "\n" + scope.creatorPublicKey
-            + "\n" + scope.name 
+            + "\n" + scope.name
             + "\n" + JSON.stringify(fee);
         const signature = this.signString(toSign, iv);
 
@@ -1067,7 +1066,7 @@ class ClientHttp {
         const data = {
             "path": path,
             "scope": scope.name,
-            "fees" : JSON.stringify(fee),
+            "fees": JSON.stringify(fee),
             "values": scope ? JSON.stringify(scope) : null,
             "signature": signature,
             "x-iv": keys.toHex(iv)
@@ -1075,7 +1074,7 @@ class ClientHttp {
 
         return this.authPost(session, "update_fees", data);
     }
-    
+
     resetConfig(session) {
         const data = {};
         return this.authPost(session, "reset_config", data);
@@ -1111,7 +1110,7 @@ class ClientHttp {
 
     async emailAuth(org, clientPubKey, targetWebUrl, email) {
         let toSign = clientPubKey + "\n" + email
-        let signature =this.apiContext.createEd25519Signature(toSign)
+        let signature = this.apiContext.createEd25519Signature(toSign)
         let data = {
             "organization": org,
             "clientPubKey": clientPubKey,
@@ -1122,7 +1121,7 @@ class ClientHttp {
         }
 
         let encodedData = btoa(JSON.stringify(data))
-        let body = {"encodedData": encodedData}
+        let body = { "encodedData": encodedData }
         return await this.post("email_auth", JSON.stringify(body), null);
     }
 }

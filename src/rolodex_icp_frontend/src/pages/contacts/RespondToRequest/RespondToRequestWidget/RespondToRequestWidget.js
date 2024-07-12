@@ -57,7 +57,7 @@ export default function RespondToRequestWidget({
 						Wallet Address
 					</div>
 					<ToggleWidget
-						isVisible={profile?.wallet?.show}
+						isVisible={profile?.wallet?.show === "true" || profile?.wallet?.show === true}
 						onToggle={(val) => updateVisibility("wallet", val)}
 					/>
 				</div>

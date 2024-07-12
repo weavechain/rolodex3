@@ -19,8 +19,8 @@ import AppRoutes from "../../../helpers/AppRoutes";
 
 export default function ProfileMainFields({
 	userModel,
-	updateModel = () => {},
-	onSubmit = () => {},
+	updateModel = () => { },
+	onSubmit = () => { },
 }) {
 	const history = useHistory();
 	const { account } = useMetaMask();

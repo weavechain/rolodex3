@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
 import s from "./ContactsRequestsPage.module.scss";
@@ -12,15 +12,31 @@ import InfoCard from "../../../components/InfoCard/InfoCard";
 import SortingWidget from "../../../components/SortingWidget/SortingWidget";
 import TabsWidget from "../../../components/TabsWidget/TabsWidget";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
+import { loadAskedFromMe, loadShare } from "../../../_redux/actions/contacts";
 
+// Requests
 export default function ContactsRequestsPage() {
 	const history = useHistory();
-	const [contacts, setContacts] = useState([]);
-	const { requests: allContacts } = useSelector((state) => state.contacts);
+	const dispatch = useDispatch();
+
+	const reduxUser = useSelector(state => state.user);
+	const reduxContacts = useSelector(state => state.contacts);
+
+	const [requestingContacts, setRequestingContacts] = useState([]);
 
 	useEffect(() => {
-		setContacts(allContacts);
-	}, [allContacts]);
+		dispatch(loadAskedFromMe(reduxUser.user.id))
+	}, []);
+
+	useEffect(() => {
+		if (!reduxContacts.askedFromMe)
+			return;
+
+		const requestingUserIds = reduxContacts.askedFromMe
+			.map(ask => ask.requestorId);
+		const requestingContacts = reduxContacts.contacts.filter(c => requestingUserIds.includes(c.id));
+		setRequestingContacts(requestingContacts);
+	}, [reduxContacts]);
 
 	// ------------------------------------- METHODS -------------------------------------
 	const respondToRequest = () => {
@@ -56,9 +72,9 @@ export default function ContactsRequestsPage() {
 					description="New requests for info from you."
 				/>
 
-				<SortingWidget onUpdate={setContacts} members={allContacts} />
+				<SortingWidget onUpdate={setRequestingContacts} members={requestingContacts} />
 				<ContactsList
-					contacts={contacts}
+					contacts={requestingContacts}
 					showNewEntries
 					onContactSelected={respondToRequest}
 				/>
@@ -66,7 +82,7 @@ export default function ContactsRequestsPage() {
 
 			<Footer
 				page={AppRoutes.contacts}
-				search={<RoloSearch data={allContacts} setData={setContacts} />}
+				search={<RoloSearch data={requestingContacts} setData={setRequestingContacts} />}
 			/>
 		</div>
 	);

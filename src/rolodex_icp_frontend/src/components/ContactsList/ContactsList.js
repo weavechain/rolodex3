@@ -2,7 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { hasItems } from "../../helpers/Utils";
+import { getListNameForAccount, hasItems } from "../../helpers/Utils";
 import { setCurrentContact } from "../../_redux/actions/contacts";
 
 import s from "./ContactsList.module.scss";
@@ -46,10 +46,10 @@ export default function ContactsList({
 							onClick={() => viewContactDetails(c)}
 						>
 							<div className={s.info}>
-								<div className={s.name}>{c.nickname?.displayText}</div>
+								<div className={s.name}>{getListNameForAccount(c)}</div>
 								<div className={s.description}>
 									<span className={showNewEntries && !c.was_seen ? s.new : ""}>
-										{c.date_created}
+										{new Date(Number(c.joinTs)).toISOString().split('T')[0]}
 									</span>
 									<span className={s.separator}>|</span>
 									<span className={s.directories}>

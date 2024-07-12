@@ -15,12 +15,11 @@ import AvatarWidget from "../../components/AvatarWidget/AvatarWidget";
 export default function HomePage() {
 	const history = useHistory();
 
-	//const { user: profile = {} } = useSelector((state) => state.user);
-	const { directories, CURRENT_DIRECTORY } = useSelector(
+	const { directories } = useSelector(
 		(state) => state.directories
 	);
-	const profile = CURRENT_DIRECTORY?.profile || {};
-	const myDirectories = directories.filter((d) => !!d.profile);
+	const { user: profile = {} } = useSelector(state => state.user);
+	const myDirectories = []; //directories.filter((d) => !!d.profile);
 
 	const name =
 		profile?.name?.value ||
@@ -40,10 +39,14 @@ export default function HomePage() {
 			</Header>
 
 			<div className={s.content}>
-				<a className={s.avatarContainer} href={`#${AppRoutes.profile}/core`}>
-					<AvatarWidget avatar={profile.avatar?.value} />
-					<p>Edit profile</p>
-				</a>
+				{
+					profile
+						? (<a className={s.avatarContainer} href={`#${AppRoutes.profile}/core`}>
+							<AvatarWidget avatar={profile.avatar?.value} />
+							<p>Edit profile</p>
+						</a>)
+						: null
+				}
 
 				{/* DIRECTORIES */}
 				<div className={s.directories}>

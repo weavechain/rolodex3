@@ -20,7 +20,7 @@ import MetamaskConnectButton from "../metamask/MetamaskAccountWidget/MetamaskCon
 export default function ProfileVisibilityWidget({
 	profile = {},
 	directory,
-	updateProfile = () => {},
+	updateProfile = () => { },
 }) {
 	const email = getProfileInfo(profile, "email");
 	const wallet = getProfileInfo(profile, "wallet");
@@ -35,6 +35,7 @@ export default function ProfileVisibilityWidget({
 
 	// ------------------------------------- METHODS -------------------------------------
 	const updateVisibility = (key, show) => {
+		show = show + ""
 		const oldData = profile[key] || {};
 		const model = {
 			...profile,
@@ -81,8 +82,11 @@ export default function ProfileVisibilityWidget({
 				<div className={s.sectionHeader}>
 					<div className={s.title}>Wallet Address</div>
 					<ToggleWidget
-						isVisible={profile?.wallet?.show}
-						onToggle={(val) => updateVisibility("wallet", val)}
+						isVisible={profile?.wallet?.show === "true" || profile?.wallet?.show === true }
+						onToggle={(val) => {
+							if (wallet)
+								updateVisibility("wallet", val)
+						}}
 					/>
 				</div>
 				{!wallet ? (
@@ -172,7 +176,7 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Favorite Sushi</div>
 						<ToggleWidget
-							isVisible={profile?.favorite_sushi?.show}
+							isVisible={profile?.favorite_sushi?.show === true || profile?.favorite_sushi?.show === "true"}
 							onToggle={(val) => updateVisibility("favorite_sushi", val)}
 						/>
 					</div>
@@ -292,7 +296,7 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Twitter</div>
 						<ToggleWidget
-							isVisible={profile?.twitter?.show}
+							isVisible={profile?.twitter?.show && (profile?.twitter?.show === "true" || profile?.twitter?.show === true)}
 							onToggle={(val) => updateVisibility("twitter", val)}
 						/>
 					</div>

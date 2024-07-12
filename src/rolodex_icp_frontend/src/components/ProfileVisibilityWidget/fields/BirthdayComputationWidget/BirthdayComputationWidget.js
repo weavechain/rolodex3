@@ -16,7 +16,7 @@ const OPTIONS = [
 
 export default function BirthdayComputationWidget({
 	profile,
-	updateModel = () => {},
+	updateModel = () => { },
 }) {
 	const [isComputational, setIsComputational] = useState(false);
 	const [displayText, setDisplayText] = useState(null);
@@ -25,16 +25,52 @@ export default function BirthdayComputationWidget({
 	const show = profile.birthday?.show;
 	const value = profile.birthday?.value;
 
-	// INIT
 	useEffect(() => {
-		const _format = typeof show === "string" ? show : OPTIONS[0].value;
-		const textFormat = _format === "hide" ? OPTIONS[0].value : _format;
-		const dt = moment(value).format(textFormat);
+		if (!profile.birthday?.value)
+			return;
 
+		let _format = computeOrDefault();
 		setFormat(_format);
+
+		if (_format === "hide") {
+			setDisplayText(profile.birthday.displayText);
+			return;
+		}
+
+
+		const dt = moment(value).format(_format);
 		setDisplayText(dt);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [show]);
+		updateModel({
+			compute: isComputational,
+			show: _format !== "hide",
+			value,
+			displayText: dt,
+		})
+	}, [])
+
+	useEffect(() => {
+		if (!profile.birthday?.value)
+			return;
+
+		let _format = computeOrDefault();
+		setFormat(_format);
+
+		if (_format === "hide") {
+			setDisplayText(profile.birthday.displayText);
+			return;
+		}
+
+		const dt = moment(value).format(_format);
+		setDisplayText(dt);
+	}, [profile])
+
+	const computeOrDefault = () => {
+		if (profile.birthday?.show === "false" || profile.birthday?.show === false)
+			return OPTIONS[2].value;
+		if (profile.birthday?.displayText?.includes(','))
+			return OPTIONS[1].value;
+		return OPTIONS[0].value;
+	}
 
 	// ------------------------------------- METHODS -------------------------------------
 	const updateFormat = (f) => {
@@ -46,7 +82,7 @@ export default function BirthdayComputationWidget({
 		if (dt) {
 			updateModel({
 				compute: isComputational,
-				show: f,
+				show: f !== "hide",
 				value,
 				displayText: dt,
 			});
@@ -79,7 +115,7 @@ export default function BirthdayComputationWidget({
 			<div
 				className={cx(s.sectionText, {
 					[s.restricted]:
-						!profile?.birthday?.show || profile?.birthday?.show === "hide",
+						!profile?.birthday?.show || profile?.birthday?.show === "false" || profile?.birthday?.show === false,
 				})}
 			>
 				{displayText}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
 import s from "./ContactsSentPage.module.scss";
@@ -12,18 +12,33 @@ import InfoCard from "../../../components/InfoCard/InfoCard";
 import SortingWidget from "../../../components/SortingWidget/SortingWidget";
 import ContactsList from "../../../components/ContactsList/ContactsList";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
+import { loadWhatIGave } from "../../../_redux/actions/contacts";
 
+// Sent
 export default function ContactsSentPage() {
 	const history = useHistory();
+	const dispatch = useDispatch();
+
+	const reduxContacts = useSelector(state => state.contacts);
+	const currentUser = useSelector(state => state.user.user);
+
 	const [contacts, setContacts] = useState([]);
-	const { sent: allContacts } = useSelector((state) => state.contacts);
+
+	useEffect(() => {
+		dispatch(loadWhatIGave(currentUser.id));
+	}, []);
+
+	useEffect(() => {
+		if (!reduxContacts.whatIGave || reduxContacts.whatIGave.len === 0)
+			return;
+
+		const requestingUserIds = reduxContacts.whatIGave.map(redReq => redReq.requestorId);
+		const requestingContacts = reduxContacts.contacts.filter(c => requestingUserIds.includes(c.id));
+		setContacts(requestingContacts);
+	}, [reduxContacts]);
 
 	// TODO:
 	const has_shared = true;
-
-	useEffect(() => {
-		setContacts(allContacts);
-	}, [allContacts]);
 
 	// ------------------------------------- METHODS -------------------------------------
 	const onContactSelected = (contact) => {
@@ -72,7 +87,7 @@ export default function ContactsSentPage() {
 
 			<Footer
 				page={AppRoutes.contacts}
-				search={<RoloSearch data={allContacts} setData={setContacts} />}
+				search={<RoloSearch data={contacts} setData={setContacts} />}
 			/>
 		</div>
 	);

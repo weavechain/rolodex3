@@ -6,6 +6,7 @@ import { useMetaMask } from "metamask-react";
 // ACTIONS
 import {
 	addUserToDirectory,
+	createUser,
 	setCoreProfile,
 } from "../../../_redux/actions/directories";
 
@@ -30,22 +31,23 @@ export default function ProfilePage() {
 	const [showPreview, setShowPreview] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
 
-	const { CURRENT_DIRECTORY, CORE_PROFILE, CORE_DIRECTORY } = useSelector(
-		(state) => state.directories
-	);
-	const profile = CURRENT_DIRECTORY?.profile || CORE_PROFILE;
+	const reduxDirectories = useSelector(state => state.directories);
+	const CORE_DIRECTORY = reduxDirectories.directories.filter(d => d.is_core_directory === 1)[0];
+	const CURRENT_DIRECTORY = reduxDirectories.CURRENT_DIRECTORY;
+	const CORE_PROFILE = useSelector(state => state.user);
+	const profile = CORE_PROFILE.user;
 
 	useEffect(() => {
 		if (profile) {
 			setCustomizeVisibility(!!CORE_PROFILE);
-			setUserModel({ ...profile });
+			setUserModel({ ...profile, }); // ...hackyUserModel
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [profile]);
 
 	useEffect(() => {
 		if (account && !profile?.wallet) {
-			setUserModel({ ...profile, wallet: { value: account, show: true } });
+			setUserModel({ ...profile, wallet: { value: account, show: true } }); //, ...hackyUserModel
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [account]);
@@ -90,6 +92,8 @@ export default function ProfilePage() {
 	const goBack = () => {
 		if (showOptional) {
 			setShowOptional(false);
+		} else if (history.location.state?.from === "waiting") {
+			history.push("/welcome");
 		} else {
 			history.goBack();
 		}
@@ -109,14 +113,14 @@ export default function ProfilePage() {
 		setShowPreview(true);
 	};
 
-	const showDirectoriesDialog = () => {
+	const joinDirectory = () => {
 		// If profile already set go to directory details
-		if (CORE_PROFILE) {
-			dispatch(addUserToDirectory(CURRENT_DIRECTORY, userModel)).then(() => {
-				_goToDirectoryDetails(CURRENT_DIRECTORY);
-			});
+		if (CORE_PROFILE.user) {
+			dispatch(addUserToDirectory(CURRENT_DIRECTORY.id, userModel))
+				.then(() => _goToDirectoryDetails(CURRENT_DIRECTORY));
 		} else {
-			setShowDialog(true);
+			dispatch(createUser(CURRENT_DIRECTORY.id, userModel))
+				.then(() => setShowDialog(true));
 		}
 	};
 
@@ -133,14 +137,14 @@ export default function ProfilePage() {
 			{showPreview ? (
 				<ProfilePreviewPage
 					profile={userModel}
-					onSubmit={showDirectoriesDialog}
+					onSubmit={joinDirectory}
 					onBack={() => setShowPreview(false)}
 				/>
 			) : customizeVisibility ? (
 				<ProfileVisibilityPage
 					directory={
 						CURRENT_DIRECTORY.id !== CORE_DIRECTORY?.id ||
-						!CORE_DIRECTORY.profile
+							!CORE_DIRECTORY.profile
 							? CURRENT_DIRECTORY
 							: null
 					}
