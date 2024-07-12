@@ -3,7 +3,7 @@ import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { respondToRequest } from "../../../../_redux/actions/contacts";
+import { loadLatestShare, respondToRequest } from "../../../../_redux/actions/contacts";
 
 import s from "./RespondToRequestInfo.module.scss";
 
@@ -19,32 +19,65 @@ export default function RespondToRequestInfo() {
 	const history = useHistory();
 	const dispatch = useDispatch();
 
-	const [updatedProfile, setUpdatedProfile] = useState({});
 	const [showDialog, setShowDialog] = useState(false);
+	const [requestedFields, setRequestedFields] = useState([]);
 
-	const { CURRENT_DIRECTORY } = useSelector((state) => state.directories);
-	const { CURRENT_CONTACT } = useSelector((state) => state.contacts);
+	const reduxContacts = useSelector(state => state.contacts);
+	const currentRequestor = reduxContacts.CURRENT_CONTACT;
+	let currentUser = useSelector(state => state.user.user);
+
+	let [enrichedCurrentUser, setEnrichedCurrentUser] = useState(currentUser);
+	let latestShare = useSelector(state => state.contacts.latestShare);
+
+	const separateCurrentUserSetter = (newValue) => {
+		setEnrichedCurrentUser(newValue);
+	}
 
 	useEffect(() => {
-		setUpdatedProfile(CURRENT_CONTACT);
+		dispatch(loadLatestShare(currentUser.id, currentRequestor.id));
+	}, []);
+
+	useEffect(() => {
+		if (!latestShare)
+			return;
+
+		for (var propertyName in latestShare) {
+			if (latestShare[propertyName]?.show === true || latestShare[propertyName]?.show === 'true') {
+				currentUser[propertyName] = latestShare[propertyName];
+			}
+		}
+		setEnrichedCurrentUser(currentUser);
+	}, [latestShare])
+
+
+	useEffect(() => {
+		if (!reduxContacts?.askedFromMe)
+			return;
+
+		setRequestedFields(reduxContacts.askedFromMe
+			.filter(r => r.requestorId === currentRequestor.id)
+			.flatMap(r => JSON.parse(r.requested_data)));
+	}, [reduxContacts]);
+
+
+	useEffect(() => {
+		setEnrichedCurrentUser(currentUser);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	if (!CURRENT_CONTACT) {
+	if (!reduxContacts) {
 		history.push(AppRoutes.contacts);
 		return null;
 	}
 
-	const requestedFields = CURRENT_CONTACT.fields;
-	const requestor = CURRENT_CONTACT.requestor;
-	const name = requestor?.name?.value;
+	const name = currentRequestor?.name?.value;
 
 	// ------------------------------------- METHODS -------------------------------------
 	const shareInfo = () => {
 		setShowDialog(true);
 
 		// Share info
-		dispatch(respondToRequest({ ...updatedProfile, was_seen: false }));
+		dispatch(respondToRequest(currentRequestor.wallet, currentRequestor.id, currentUser.id, requestedFields, { ...enrichedCurrentUser, was_seen: false }));
 	};
 
 	return (
@@ -67,8 +100,7 @@ export default function RespondToRequestInfo() {
 
 			{showDialog ? (
 				<ShareInfoDialog
-					contactId={CURRENT_CONTACT.id}
-					directory={CURRENT_DIRECTORY}
+					contactId={currentRequestor.id}
 					close={() => setShowDialog(false)}
 				/>
 			) : null}
@@ -81,9 +113,9 @@ export default function RespondToRequestInfo() {
 
 				<div className={s.fields}>
 					<RespondToRequestWidget
-						profile={updatedProfile}
+						profile={enrichedCurrentUser}
 						requestedFields={requestedFields}
-						updateProfile={setUpdatedProfile}
+						updateProfile={separateCurrentUserSetter}
 					/>
 
 					<div className={cx(s.section, s.buttons)}>

@@ -17,11 +17,13 @@ export default function GenericFieldEditor({
 	title,
 	placeholder = "ex. jim",
 	requestedFields = [],
-	updateModel = () => {},
-	updateVisibility = () => {},
+	updateModel = () => { },
+	updateVisibility = () => { },
 }) {
+	if (!profile || !profile[name])
+		return (<></>);
 	const value = getProfileInfo(profile, name) || "";
-	const show = profile[name]?.show;
+	const show = profile[name]?.show && ((profile[name]?.show === true || profile[name]?.show === 'true'));
 	const isRequested = requestedFields.includes(name);
 	const isEditMode = isRequested && !value;
 
@@ -43,27 +45,25 @@ export default function GenericFieldEditor({
 					/>
 				</div>
 
-				{name === "avatar" ? (
-					<AvatarWidget avatar={getProfileInfo(profile, "avatar")} />
-				) : isEditMode ? (
-					name === "favorite_sushi" ? (
-						<SushiSelector
-							value={value}
-							noTitle
-							onSelect={(value) => updateModel(name, value)}
-						/>
-					) : (
-						<InputWidget
-							isMandatory
-							value={value}
-							placeholder={placeholder}
-							onChange={(newVal) => updateModel(name, newVal)}
-							titleClass={s.sectionTitle}
-						/>
-					)
-				) : (
-					<GenericDisplayText text={value} name={name} show={show} />
-				)}
+				{name === "avatar"
+					? (<AvatarWidget avatar={getProfileInfo(profile, "avatar")} />)
+					: isEditMode
+						? (name === "favorite_sushi"
+							? (<SushiSelector
+								value={value}
+								noTitle
+								onSelect={(value) => updateModel(name, value)}
+							/>)
+							: (
+								<InputWidget
+									isMandatory
+									value={value}
+									placeholder={placeholder}
+									onChange={(newVal) => updateModel(name, newVal)}
+									titleClass={s.sectionTitle}
+								/>
+							))
+						: (<GenericDisplayText text={value} name={name} show={show} />)}
 			</div>
 		</div>
 	);

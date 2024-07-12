@@ -11,8 +11,8 @@ export default function SortingWidget({
 }) {
 	// SORT BY
 	const sortOptions = [
-		{ name: "A to Z", sort_by: "name", direction: "asc" },
-		{ name: "Z to A", sort_by: "name", direction: "desc" },
+		{ name: "A to Z", sort_by: "nickname", direction: "asc" },
+		{ name: "Z to A", sort_by: "nickname", direction: "desc" },
 		{
 			name: "Newest",
 			sort_by: "date_created",
@@ -42,7 +42,7 @@ export default function SortingWidget({
 		if (sort_by === "contacts") {
 			sortedList = members.filter((m) => m.isContact);
 			// For directory members ({value: "smith", displayText: "Smith"})
-		} else if (sort_by === "name") {
+		} else if (sort_by === "nickname") {
 			sortedList = _.orderBy(members, (m) => [m.name?.value, m.name?.value], [
 				dir,
 			]);

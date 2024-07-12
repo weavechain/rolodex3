@@ -1,7 +1,7 @@
 import { isLocalhost } from "./Utils";
 import AppConfig from "../AppConfig";
 import LOCAL_STORAGE from "./localStorage";
-import DEFAULT_DEMO_DATA from "../_mocks/DEFAULT_DEMO_DATA";
+import { generateAndSendMagicLink } from "../_redux/actions/user";
 
 const LOGIN_TOKEN = "123123";
 
@@ -34,32 +34,6 @@ const getNotificationsCount = (contacts = {}) => {
 	return newRequestsCount + receivedCount;
 };
 
-const getAppData = () => {
-	const directories = DEFAULT_DEMO_DATA.directories || [];
-
-	// TODO: For now using LS
-	let oldState = LOCAL_STORAGE.loadState() || {};
-	const CORE_DIRECTORY = oldState.CORE_DIRECTORY || directories[0];
-	const CORE_PROFILE = oldState.CORE_PROFILE;
-
-	return {
-		CORE_DIRECTORY,
-		CORE_PROFILE,
-	};
-};
-
-const setAppData = (directory, profile) => {
-	let newData = { CORE_DIRECTORY: directory };
-	if (profile) newData.CORE_PROFILE = profile;
-
-	// TODO: For now using LS
-	let oldState = LOCAL_STORAGE.loadState() || {};
-	LOCAL_STORAGE.saveState({
-		...(oldState || {}),
-		...newData,
-	});
-};
-
 const hasJoinedDirectory = (directoryId) => {
 	let { joinedDirectories } = LOCAL_STORAGE.loadState() || {};
 	return joinedDirectories && !!joinedDirectories[directoryId];
@@ -79,28 +53,27 @@ const sendMagicLink = (email) => {
 
 // ------------------------------------- PRIVATE -------------------------------------
 const _sendEmail = ({ to, subject, body }) => {
-	return new Promise((resolve) => {
-		const url = `mailto:${to}?subject=${subject}&body=${body}`;
+	return generateAndSendMagicLink(to);
+	// return new Promise((resolve) => {
+	// 	const url = `mailto:${to}?subject=${subject}&body=${body}`;
 
-		const link = document.createElement("a");
-		link.href = url;
+	// 	const link = document.createElement("a");
+	// 	link.href = url;
 
-		if (document.createEvent) {
-			const e = document.createEvent("MouseEvents");
-			e.initEvent("click", true, true);
-			link.dispatchEvent(e);
-		}
+	// 	if (document.createEvent) {
+	// 		const e = document.createEvent("MouseEvents");
+	// 		e.initEvent("click", true, true);
+	// 		link.dispatchEvent(e);
+	// 	}
 
-		resolve(true);
-	});
+	// 	resolve(true);
+	// });
 };
 
 // ------------------------------------- PUBLIC -------------------------------------
 const AppHelper = {
 	sendMagicLink,
 	hasJoinedDirectory,
-	getAppData,
-	setAppData,
 	getNotificationsCount,
 	DISPLAY_FIELDS,
 };

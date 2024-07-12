@@ -8,7 +8,7 @@ export default function NameComputationWidget({
 	profile,
 	updateModel = () => {},
 }) {
-	const [format, setFormat] = useState();
+	const [format, setFormat] = useState("nickname");
 	const [displayText, setDisplayText] = useState("");
 
 	const { nickname, firstName, lastName } = profile;

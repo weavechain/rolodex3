@@ -24,7 +24,7 @@ export default function DirectoryMemberDetails() {
 	const directory = directories.find((d) => d.id === id) || {};
 	const allMembers = directory?.members || [];
 
-	const member = allMembers.find((d) => d.id === memberId);
+	const member = useSelector(state => state.contacts.CURRENT_CONTACT);
 
 	if (!member) {
 		history.push(AppRoutes.home);
@@ -33,6 +33,7 @@ export default function DirectoryMemberDetails() {
 
 	const visibleFields = [];
 	DISPLAY_FIELDS.forEach(({ name, key }) => {
+		if (member[key]?.show === "true" || member[key]?.show === true) {
 		visibleFields.push({
 			name: name,
 			value:
@@ -42,6 +43,7 @@ export default function DirectoryMemberDetails() {
 					? member[key]?.value.join(", ")
 					: member[key]?.value,
 		});
+	}
 	});
 
 	// ------------------------------------- METHODS -------------------------------------

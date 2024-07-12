@@ -10,15 +10,14 @@ import AppRoutes from "../../helpers/AppRoutes";
 
 export default function ShareInfoDialog({
 	contactId,
-	directory,
-	close = () => {},
+	close = () => { },
 }) {
 	const history = useHistory();
 
 	// ------------------------------------- METHODS -------------------------------------
 	const viewDirectoryProfile = () => {
 		history.push(
-			`${AppRoutes.directories}/${directory.id}/members/${contactId}`
+			`${AppRoutes.contacts}/${contactId}`
 		);
 	};
 
@@ -39,7 +38,7 @@ export default function ShareInfoDialog({
 			<ModalFooter>
 				<div className={s.buttons}>
 					<RoloButton
-						text="Back to Directory Profile"
+						text="Back to Contact Profile"
 						className={cx(s.button, "btn-border")}
 						onClick={viewDirectoryProfile}
 						noIcon

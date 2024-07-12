@@ -15,10 +15,15 @@ import AppConfig from "../../../AppConfig";
 export default function DirectoriesPage() {
 	const [data, setData] = useState([]);
 
+	let prevDirs = [];
+
 	const { directories = [] } = useSelector((state) => state.directories);
 
 	useEffect(() => {
-		setData(directories);
+		if (!prevDirs === directories) {
+			prevDirs = directories;
+			setData(directories);
+		}
 	}, [directories]);
 
 	React.useEffect(() => {

@@ -12,17 +12,15 @@ export default function GenericDisplayText({ text, name, show }) {
 				[s.restricted]: !show,
 			})}
 		>
-			{name === "email" ? (
-				<a href={`mailto:${text}`}>{text}</a>
-			) : name === "linkedin" ? (
-				<a href={text} target="_blank" rel="noreferrer">
-					{text}
-				</a>
-			) : name === "twitter" ? (
-				<a href={`${AppConfig.TWITTER_URL}${text}`}>{text}</a>
-			) : (
-				<span>{text}</span>
-			)}
+			{name === "email"
+				? (<a href={`mailto:${text}`}>{text}</a>)
+				: name === "linkedin"
+					? (<a href={text} target="_blank" rel="noreferrer">
+						{text}
+					</a>)
+					: name === "twitter"
+						? (<a href={`${AppConfig.TWITTER_URL}${text}`}>{text}</a>)
+						: (<span>{text}</span>)}
 		</div>
 	);
 }

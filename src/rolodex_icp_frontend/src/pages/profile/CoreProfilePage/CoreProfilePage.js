@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useMetaMask } from "metamask-react";
 
-import { setCoreProfile } from "../../../_redux/actions/directories";
+import { addUserToDirectory, setUserProfileForDirectory } from "../../../_redux/actions/directories";
 import { getProfileInfo } from "../../../helpers/Utils";
 
 import s from "./CoreProfilePage.module.scss";
@@ -32,10 +32,27 @@ export default function CoreProfilePage() {
 	const [userModel, setUserModel] = useState({});
 	const [isEditMode, setIsEditMode] = useState(false);
 
-	const { CORE_DIRECTORY, CORE_PROFILE } = useSelector(
-		(state) => state.directories
-	);
-	const profile = CORE_PROFILE;
+	const reduxDirectories = useSelector(state => state.directories);
+	const coreDirectory = reduxDirectories.directories.filter(d => d.is_core_directory === 1)[0];
+	const loggedInUser = useSelector(state => state.user);
+
+	const [profile, setProfile] = useState(null);
+
+	useEffect(() => {
+		if (!loggedInUser.user) {
+			return;
+		}
+		if (loggedInUser.user.directoryId === Number(coreDirectory.id)) { // current user profile is the coreDirectory profile
+			setProfile(loggedInUser.user);
+			return;
+		}
+		dispatch(setUserProfileForDirectory(loggedInUser.user.id, coreDirectory.id))
+			.then(r => {
+				if (!r) { // user doesn't have a coreDirectory profile
+					return;
+				}
+			});
+	}, [loggedInUser]);
 
 	useEffect(() => {
 		if (profile) {
@@ -75,7 +92,7 @@ export default function CoreProfilePage() {
 		if (!isValid()) return;
 
 		setIsEditMode(false);
-		dispatch(setCoreProfile(CORE_DIRECTORY, userModel));
+		dispatch(addUserToDirectory(coreDirectory.id, userModel));
 	};
 
 	return (

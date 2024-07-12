@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import s from "./Charts.module.scss";
@@ -6,7 +6,8 @@ import s from "./Charts.module.scss";
 const COLORS = ["#52E8CD", "#17AD92", "#F5FAFE", "#97F1E1"];
 const RADIAN = Math.PI / 180;
 
-export default function SimplePieChart({ title, data }) {
+function SimplePieChart({ title, pieData }) {
+
 	// ------------------------------------- METHODS -------------------------------------
 	const renderCustomizedLabel = (item) => {
 		const { cx, cy, midAngle, innerRadius, outerRadius, name, value, index } =
@@ -45,7 +46,7 @@ export default function SimplePieChart({ title, data }) {
 		);
 	};
 
-	return !data ? null : (
+	return !pieData ? null : (
 		<div className={s.root}>
 			<div className={s.title}>{title}</div>
 
@@ -53,7 +54,7 @@ export default function SimplePieChart({ title, data }) {
 				<PieChart>
 					<Pie
 						height={250}
-						data={data}
+						data={pieData}
 						cx="50%"
 						cy="50%"
 						outerRadius={140}
@@ -65,8 +66,8 @@ export default function SimplePieChart({ title, data }) {
 						//fill="#17AD92"
 						label={renderCustomizedLabel}
 					>
-						{data.map((entry, index) => (
-							<Cell key={entry} fill={COLORS[index % COLORS.length]} />
+						{pieData.map((entry, index) => (
+							<Cell key={entry} label="sdfsdf" fill={COLORS[index % COLORS.length]} />
 						))}
 					</Pie>
 				</PieChart>
@@ -74,3 +75,5 @@ export default function SimplePieChart({ title, data }) {
 		</div>
 	);
 }
+
+export default React.memo(SimplePieChart);

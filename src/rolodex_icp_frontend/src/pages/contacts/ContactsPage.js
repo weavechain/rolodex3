@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import s from "./ContactsPage.module.scss";
 
@@ -11,14 +11,22 @@ import InfoCard from "../../components/InfoCard/InfoCard";
 import SortingWidget from "../../components/SortingWidget/SortingWidget";
 import TabsWidget from "../../components/TabsWidget/TabsWidget";
 import RoloSearch from "../../components/RoloSearch/RoloSearch";
+import { loadContactsOfProfile } from "../../_redux/actions/contacts";
 
 export default function ContactsPage() {
+	const dispatch = useDispatch();
+	const reduxContacts = useSelector(state => state.contacts);
+	const directories = useSelector(state => state.directories).directories;
 	const [contacts, setContacts] = useState([]);
-	const { contacts: allContacts } = useSelector((state) => state.contacts);
+	const profile = useSelector(state => state.user);
 
 	useEffect(() => {
-		setContacts(allContacts);
-	}, [allContacts]);
+		dispatch(loadContactsOfProfile(profile, directories));
+	}, []);
+
+	useEffect(() => {
+		setContacts(reduxContacts.contacts);
+	}, [reduxContacts]);
 
 	return (
 		<div className={s.root}>
@@ -54,7 +62,7 @@ export default function ContactsPage() {
 
 			<Footer
 				page={AppRoutes.contacts}
-				search={<RoloSearch data={allContacts} setData={setContacts} />}
+				search={<RoloSearch data={contacts} setData={setContacts} />}
 			/>
 		</div>
 	);

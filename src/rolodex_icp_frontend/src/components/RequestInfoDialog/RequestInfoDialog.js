@@ -10,7 +10,6 @@ import AppRoutes from "../../helpers/AppRoutes";
 
 export default function RequestInfoDialog({
 	contactId,
-	directory,
 	close = () => {},
 }) {
 	const history = useHistory();
@@ -18,7 +17,7 @@ export default function RequestInfoDialog({
 	// ------------------------------------- METHODS -------------------------------------
 	const viewDirectoryProfile = () => {
 		history.push(
-			`${AppRoutes.directories}/${directory.id}/members/${contactId}`
+			`${AppRoutes.contacts}/${contactId}`
 		);
 	};
 
@@ -41,7 +40,7 @@ export default function RequestInfoDialog({
 			<ModalFooter>
 				<div className={s.buttons}>
 					<RoloButton
-						text="Back to Directory Profile"
+						text="Back to Contact Profile"
 						className={cx(s.button, "btn-border")}
 						onClick={viewDirectoryProfile}
 						noIcon

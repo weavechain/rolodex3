@@ -20,9 +20,10 @@ export default function Footer({ page, showFooter, className = "", search }) {
 
 	const contacts = useSelector((state) => state.contacts);
 	const { CORE_PROFILE } = useSelector((state) => state.directories);
+	const user = useSelector(state => state.user.user);
 	const notificationsCount = AppHelper.getNotificationsCount(contacts);
 
-	const isLoggedIn = !!account || !!CORE_PROFILE || showFooter;
+	const isLoggedIn = !!account || !!CORE_PROFILE || showFooter || user;
 
 	const pages = [
 		{ name: "Home", path: AppRoutes.home, icon: HomeIcon },

@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import { removeUserFromDirectory } from "../../_redux/actions/directories";
@@ -11,9 +11,10 @@ import s from "./LeaveDirectoryDialog.module.scss";
 import RoloButton from "../RoloButton/RoloButton";
 import AppRoutes from "../../helpers/AppRoutes";
 
-export default function LeaveDirectoryDialog({ directory, close = () => {} }) {
+export default function LeaveDirectoryDialog({ directory, close = () => { } }) {
 	const history = useHistory();
 	const dispatch = useDispatch();
+	const profile = useSelector(state => state.user);
 
 	// ------------------------------------- METHODS -------------------------------------
 	const editProfile = () => {
@@ -21,9 +22,8 @@ export default function LeaveDirectoryDialog({ directory, close = () => {} }) {
 	};
 
 	const leaveDirectory = () => {
-		dispatch(removeUserFromDirectory(directory)).then(() => {
-			history.push(`${AppRoutes.myDirectories}`);
-		});
+		removeUserFromDirectory(directory, profile)
+			.then(() => history.push(`${AppRoutes.myDirectories}`));
 	};
 
 	return (

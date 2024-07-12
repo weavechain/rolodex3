@@ -1,7 +1,10 @@
+const isLocal = 1;
+const wevSeed = "aeb5e91eb00aa33ad221fc1ade75da57";
 const AppConfig = {
 	AppName: "RoloDEX",
 	baseUrl: "/",
 	AppUrl: "rolodex.weavechain.com",
+	WEV_NODE: (isLocal ? "http://localhost:47080/" : "https://rolodex.weavechain.com:10443/") + wevSeed,
 
 	METAMASK_DOWNLOAD_URL: "https://metamask.io/download/",
 	TERMS_URL: "https://weavechain.io/privacy-policy",

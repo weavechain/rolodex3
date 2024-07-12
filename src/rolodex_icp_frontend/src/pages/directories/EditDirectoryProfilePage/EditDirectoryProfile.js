@@ -18,8 +18,7 @@ const EditDirectoryProfilePage = () => {
 	const [showDialog, setShowDialog] = useState(null);
 	const [hasChanges, setHasChanges] = useState(null);
 
-	const { CURRENT_DIRECTORY } = useSelector((state) => state.directories);
-	const profile = CURRENT_DIRECTORY?.profile;
+	const profile = useSelector((state) => state.user.user);
 
 	useEffect(() => {
 		if (profile) {
@@ -37,7 +36,7 @@ const EditDirectoryProfilePage = () => {
 		setShowDialog(false);
 		setHasChanges(false);
 
-		dispatch(addUserToDirectory(CURRENT_DIRECTORY, visibleProfile)).then(() => {
+		dispatch(addUserToDirectory(visibleProfile.directoryId, visibleProfile)).then(() => {
 			history.goBack();
 		});
 	};
@@ -70,7 +69,7 @@ const EditDirectoryProfilePage = () => {
 			<div className={s.content}>
 				{visibleProfile ? (
 					<ProfileVisibilityWidget
-						directory={CURRENT_DIRECTORY}
+						directory={visibleProfile.directoryId}
 						profile={visibleProfile}
 						updateProfile={updateProfile}
 					/>

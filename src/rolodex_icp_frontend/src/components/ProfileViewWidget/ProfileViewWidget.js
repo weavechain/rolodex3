@@ -16,7 +16,7 @@ export default function ProfileViewWidget({ directory, profile = {} }) {
 	const visibleFields = [];
 	DISPLAY_FIELDS.forEach(({ name, key }) => {
 		if (
-			(!!profile[key]?.show && profile[key]?.show !== "hide") ||
+			(!!profile[key]?.show && profile[key]?.show !== "hide" && profile[key]?.show !== "false") ||
 			(key === "directories" && profile[key])
 		) {
 			visibleFields.push({

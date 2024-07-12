@@ -9,7 +9,7 @@ export default function NameComputationWidget({
 	updateModel = () => {},
 	titleClassName = "",
 }) {
-	const [format, setFormat] = useState(profile?.name?.show || "nickname");
+	const [format, setFormat] = useState("nickname");
 	const [displayText, setDisplayText] = useState("");
 
 	useEffect(() => {

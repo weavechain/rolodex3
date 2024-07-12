@@ -3,7 +3,7 @@ const AppRoutes = {
 	home: 											"/",
 	welcome: 										"/welcome",
 	login: 											"/login",
-	loginWithToken: 						"/login/:token?",
+	loginWithToken: 						"/login/:urlEmail?/:urlToken?",
 	metamask: 									"/waiting",
 	profile: 										"/profile",
 	contacts: 									"/contacts",
