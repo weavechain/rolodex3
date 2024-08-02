@@ -16,9 +16,10 @@ export default function RequestInfoDialog({
 
 	// ------------------------------------- METHODS -------------------------------------
 	const viewDirectoryProfile = () => {
-		history.push(
+		history.go(-1);
+		/* history.push(
 			`${AppRoutes.contacts}/${contactId}`
-		);
+		); */
 	};
 
 	const requestInfo = () => {

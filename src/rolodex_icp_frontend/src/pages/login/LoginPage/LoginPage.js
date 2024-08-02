@@ -17,7 +17,7 @@ import AppRoutes from "../../../helpers/AppRoutes";
 export default function LoginPage() {
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const [email, setEmail] = useState("ko@bold.iz");
+	const [email, setEmail] = useState("");
 	const [isMandatory] = useState(true);
 	const [emailWasSent, setEmailWasSent] = useState(false);
 

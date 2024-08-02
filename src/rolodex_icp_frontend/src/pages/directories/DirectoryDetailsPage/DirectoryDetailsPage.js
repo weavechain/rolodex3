@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { pluralize } from "../../../helpers/Utils";
 
 // ACTIONS
-import { getMemberCountByDirectoryId, getMembersByDirectoryId, setCurrentDirectory, setUserProfileForDirectory } from "../../../_redux/actions/directories";
+import { getAvgAge, getMemberCountByDirectoryId, setCurrentDirectory, setUserProfileForDirectory } from "../../../_redux/actions/directories";
 
 import s from "./DirectoryDetailsPage.module.scss";
 
@@ -29,66 +29,51 @@ export default function DirectoryDetailsPage(props) {
 	const comingFromOnboarding = history.location.state?.from === "onboarding";
 
 	const { directories = [], } = useSelector((state) => state.directories);
-	const loggedInUser = useSelector(state => state.user);
-	const directory = directories.find((d) => d.id === id);
+	const directory = directories.find((d) => d.directoryId === id);
+
+	const userId = useSelector(state => state.user?.coreProfile?.userId);
 
 	let [pieData, setPieData] = useState(null);
+	let [avgAge, setAvgAge] = useState(".");
+
+	let avgLoadingText = ".";
+	let loadedAvg = false;
+	let [intervall, setIntervall] = useState(null);
 
 	useEffect(() => {
-		getMembersByDirectoryId(directory.id)
-			.then(members => {
-				let membersCount = members.length;
-
-				// TODO: 
-
-				let countNetworking = 0;
-				let countInvestors = 0;
-				let countCollaborators = 0;
-				let countInterests = 0;
-
-				for (let i = 0; i < membersCount; i++) {
-					if (!members[i]?.lookingFor)
-						continue;
-					let currLookingFor = JSON.parse(members[i].lookingFor).value;
-					if (currLookingFor.includes("Networking"))
-						countNetworking++;
-					if (currLookingFor.includes("Investors"))
-						countInvestors++;
-					if (currLookingFor.includes("Collaborators"))
-						countCollaborators++;
-					countInterests += currLookingFor.length;
-				}
-
-				let _data = [
-					{
-						name: "Networking", value: countNetworking / countInterests * 100
-					},
-					{
-						name: "Investors", value: countInvestors / countInterests * 100
-					},
-					{
-						name: "Collaborators", value: countCollaborators / countInterests * 100
-					},
-				];
-				setPieData(_data);
-			})
+		const i = setInterval(() => updateUi(), 500);
+		setIntervall(i);
 	}, []);
 
-	useEffect(() => {
-		const userId = loggedInUser.user
-			? loggedInUser.user.id // user existed in DB
-			: undefined; // user doesn't exist, clicked "Get Started"
-		dispatch(setUserProfileForDirectory(userId, id))
-			.then(r => setHasJoined(r));
-	}, []);
+	const updateUi = () => {
+		if (!loadedAvg) {
+			setAvgAge(avgLoadingText);
+			avgLoadingText = avgLoadingText + '.';
+		} else {
+			clearInterval(intervall);
+		}
+	};
 
 	let [hasJoined, setHasJoined] = useState(false);
 	let [membersCount, setMembersCount] = useState(0);
 
 	useEffect(() => {
+		getAvgAge(directory.directoryId)
+			.then(avg => {
+				loadedAvg = true;
+				setAvgAge(avg)
+			});
+	}, []);
+
+	useEffect(() => {
+		dispatch(setUserProfileForDirectory(userId, id))
+			.then(r => setHasJoined(r ? true : false));
+	}, []);
+
+	useEffect(() => {
 		if (!directory)
 			return;
-		getMemberCountByDirectoryId(directory.id)
+		getMemberCountByDirectoryId(directory.directoryId)
 			.then(c => setMembersCount(c));
 	}, []);
 
@@ -101,7 +86,7 @@ export default function DirectoryDetailsPage(props) {
 	// ------------------------------------- METHODS -------------------------------------
 	const joinDirectory = () => {
 		dispatch(setCurrentDirectory(directory)).then(() => {
-			history.push(loggedInUser ? AppRoutes.profileInfo : AppRoutes.profile);
+			history.push(!userId ? AppRoutes.profileInfo : AppRoutes.profile);
 		});
 	};
 
@@ -122,11 +107,11 @@ export default function DirectoryDetailsPage(props) {
 						{ name: "About", url: "", isActive: true },
 						{
 							name: "Members",
-							url: `${AppRoutes.directories}/${directory.id}/members`,
+							url: `${AppRoutes.directories}/${directory.directoryId}/members`,
 						},
 						{
 							name: "My Dir. Profile",
-							url: `${AppRoutes.directories}/${directory.id}/profile`,
+							url: `${AppRoutes.directories}/${directory.directoryId}/profile`,
 						},
 					]}
 				/>
@@ -162,7 +147,7 @@ export default function DirectoryDetailsPage(props) {
 							<img src={CakeIcon} alt="..." />
 							AVG AGE
 						</div>
-						<div className={s.value}>{directory.average_age}</div>
+						<div className={s.value}>{avgAge}</div>
 					</div>
 					<div className={s.panel}>
 						<div className={s.label}>

@@ -12,7 +12,7 @@ import InfoCard from "../../../components/InfoCard/InfoCard";
 import SortingWidget from "../../../components/SortingWidget/SortingWidget";
 import ContactsList from "../../../components/ContactsList/ContactsList";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
-import { loadWhatIGave } from "../../../_redux/actions/contacts";
+import { getUnknownContacts, loadWhatIGave } from "../../../_redux/actions/contacts";
 
 // Sent
 export default function ContactsSentPage() {
@@ -20,21 +20,28 @@ export default function ContactsSentPage() {
 	const dispatch = useDispatch();
 
 	const reduxContacts = useSelector(state => state.contacts);
-	const currentUser = useSelector(state => state.user.user);
+	const coreProfile = useSelector(state => state.user.coreProfile);
 
 	const [contacts, setContacts] = useState([]);
 
 	useEffect(() => {
-		dispatch(loadWhatIGave(currentUser.id));
+		dispatch(loadWhatIGave(coreProfile.userId));
 	}, []);
 
 	useEffect(() => {
 		if (!reduxContacts.whatIGave || reduxContacts.whatIGave.len === 0)
 			return;
 
-		const requestingUserIds = reduxContacts.whatIGave.map(redReq => redReq.requestorId);
-		const requestingContacts = reduxContacts.contacts.filter(c => requestingUserIds.includes(c.id));
-		setContacts(requestingContacts);
+		const requestingUserIds = reduxContacts.whatIGave.map(redReq => redReq.askerId);
+		const requestingContacts = reduxContacts.contacts.filter(c => requestingUserIds.includes(c.userId));
+		const requestingContactsIds = requestingContacts.map(c => c.userId);
+		const requestingNonContactIds = requestingUserIds.filter(id => !requestingContactsIds.includes(id));
+		getUnknownContacts(requestingNonContactIds, coreProfile.userId)
+			.then(nonContacts => {
+				requestingContacts.push(...nonContacts);
+				return requestingContacts;
+			})
+			.then(reqCont => setContacts(reqCont));
 	}, [reduxContacts]);
 
 	// TODO:
@@ -43,7 +50,7 @@ export default function ContactsSentPage() {
 	// ------------------------------------- METHODS -------------------------------------
 	const onContactSelected = (contact) => {
 		const path = has_shared
-			? `${AppRoutes.contacts}/${contact.id}`
+			? `${AppRoutes.contacts}/${contact.userId}`
 			: AppRoutes.directoryMemberDetails;
 
 		history.push(path);

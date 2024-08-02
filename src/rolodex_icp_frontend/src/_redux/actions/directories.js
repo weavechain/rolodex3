@@ -6,6 +6,7 @@ import Records from "../../weaveapi/records";
 import { Filter, FilterOp } from "../../weaveapi/filter";
 import { stringHashCode } from "../../helpers/Utils";
 import AppConfig from "../../AppConfig";
+import { assureDirectoryProfileIsUiFormat } from "../reducers/user";
 
 // TODO: where to get keys from?
 const pub = "weaved8xLnTMp5B5GtJwDQvc1u7K4fwPc2ry7iDieyCdJRHcG";
@@ -15,9 +16,13 @@ const pvk = "3eF1tyUnN3AjrLzmaFPEnk5yr6zbWggLv6884B5G6ak7";
 const node = AppConfig.WEV_NODE;
 const organization = "icprolodex";
 const scope = "rolodex";
-const tableUsers = "users";
-const tableDirectories = "directories";
 const encrypted = node.startsWith("http://");
+
+let table_core_profile = "core_profile";
+let table_dir_profile = "directory_profile";
+
+const tableDirectories = "directories";
+
 
 const cfg = WeaveHelper.getConfig(node, pub, pvk, encrypted)
 
@@ -28,8 +33,6 @@ export const initDirectories = () => {
 		const session = await nodeApi.login(organization, pub, scope || "*");
 
 		const readRes = await nodeApi.read(session, scope, tableDirectories, null, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
-
-		readRes.data.forEach(dir => dir.id = dir.directory_id);
 
 		dispatch({
 			type: ActionTypes.INIT_DIRECTORIES,
@@ -51,9 +54,14 @@ export const getMembersByDirectoryId = async (directoryId) => {
 	const filterOp = FilterOp.eq("directoryId", Number(directoryId));
 	const filter = new Filter(filterOp, null, null, ["userId"], null, null);
 
-	const readResult = await nodeApi.read(session, scope, tableUsers, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+	const readResult = await nodeApi.read(session, scope, table_dir_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
 
-	return readResult.data;
+	if (!readResult.data || readResult.data.length === 0)
+		return [];
+
+	let res = readResult.data.map(r => assureDirectoryProfileIsUiFormat(r));
+
+	return res;
 }
 
 export const setCurrentDirectory = (directory) => {
@@ -70,63 +78,90 @@ export const setCurrentDirectory = (directory) => {
 	};
 };
 
-export const setCoreProfile = (directory, profile) => {
-	const updatedDirectory = { ...directory, profile };
-
-	return (dispatch) => {
-		return new Promise((resolve) => {
-			dispatch({
-				type: ActionTypes.UPDATE_CORE_PROFILE,
-				directory: updatedDirectory,
-				profile,
-			});
-
-			resolve(profile);
-		});
-	};
-};
-
-export const createUser = (directoryId, profile) => {
-	const userId = stringHashCode(JSON.stringify(profile));
-	console.log("userId hashcode =  " + userId);
-	const userRecords = new Records(tableUsers, [
-		[
-			undefined,
-			userId,
-			Number(directoryId),
-			JSON.stringify(profile.nickname),
-			JSON.stringify(profile.lastName),
-			JSON.stringify(profile.firstName),
-			JSON.stringify(profile.birthday),
-			profile.lookingFor ? JSON.stringify(profile.lookingFor) : undefined,
-			JSON.stringify(profile.favorite_sushi),
-			JSON.stringify(profile.email),
-			JSON.stringify(profile.phone),
-			JSON.stringify(profile.country),
-			JSON.stringify(profile.state),
-			JSON.stringify(profile.city),
-			JSON.stringify(profile.jobTitle),
-			JSON.stringify(profile.company),
-			JSON.stringify(profile.linkedin),
-			JSON.stringify(profile.discord),
-			JSON.stringify(profile.telegram),
-			JSON.stringify(profile.twitter),
-			profile.wallet?.value,
-			profile.wallet?.show === 'true' || profile.wallet?.show === true ? 1 : 0,
-			Date.now()
-		]
-	]);
+export const updateCoreProfile = (newCoreProfile) => {
 	return async dispatch => {
 		const nodeApi = new WeaveAPI().create(cfg);
 		await nodeApi.init();
 		const session = await nodeApi.login(organization, pub, scope || "*");
-		await nodeApi.write(session, scope, userRecords, WeaveHelper.Options.WRITE_DEFAULT);
-		const persistedUser = await nodeApi.read(session, scope, tableUsers, new Filter(FilterOp.eq("userId", userId)), WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+
+		const records = new Records(table_core_profile, [[
+			undefined,
+			newCoreProfile.reader,
+			newCoreProfile.userId,
+			newCoreProfile.nickname,
+			newCoreProfile.lastName,
+			newCoreProfile.firstName,
+			newCoreProfile.birthday,
+			JSON.stringify(newCoreProfile.lookingFor),
+			newCoreProfile.favorite_sushi,
+			newCoreProfile.email,
+			newCoreProfile.phone,
+			newCoreProfile.country,
+			newCoreProfile.state,
+			newCoreProfile.city,
+			newCoreProfile.jobTitle,
+			newCoreProfile.company,
+			newCoreProfile.linkedin,
+			newCoreProfile.discord,
+			newCoreProfile.telegram,
+			newCoreProfile.twitter,
+			newCoreProfile.wallet,
+			newCoreProfile.ts,
+		]]);
+
+		await nodeApi.write(session, scope, records, WeaveHelper.Options.WRITE_DEFAULT);
+
+		const updatedCoreProfileFromDB = await getCoreProfileByUserId(newCoreProfile.userId);
+
 		dispatch({
-			type: ActionTypes.LOGIN_SUCCESS,
-			user: persistedUser.data[0]
+			type: ActionTypes.LOAD_CORE_PROFILE,
+			coreProfile: updatedCoreProfileFromDB,
 		});
-		return persistedUser.data[0];
+	};
+}
+
+export const createCoreProfile = (coreProfile) => {
+	return async dispatch => {
+		const nodeApi = new WeaveAPI().create(cfg);
+		await nodeApi.init();
+		const session = await nodeApi.login(organization, pub, scope || "*");
+
+		const newUserId = stringHashCode(JSON.stringify(coreProfile) + Date.now());
+		const records = new Records(table_core_profile, [[
+			undefined,
+			coreProfile.reader,
+			newUserId,
+			coreProfile.nickname,
+			coreProfile.lastName,
+			coreProfile.firstName,
+			coreProfile.birthday,
+			JSON.stringify(coreProfile.lookingFor),
+			coreProfile.favorite_sushi,
+			coreProfile.email,
+			coreProfile.phone,
+			coreProfile.country,
+			coreProfile.state,
+			coreProfile.city,
+			coreProfile.jobTitle,
+			coreProfile.company,
+			coreProfile.linkedin,
+			coreProfile.discord,
+			coreProfile.telegram,
+			coreProfile.twitter,
+			coreProfile.wallet,
+			coreProfile.ts,
+		]]);
+
+		await nodeApi.write(session, scope, records, WeaveHelper.Options.WRITE_DEFAULT);
+
+		const updatedCoreProfileFromDB = await getCoreProfileByUserId(newUserId);
+
+		dispatch({
+			type: ActionTypes.LOAD_CORE_PROFILE,
+			coreProfile: updatedCoreProfileFromDB,
+		});
+
+		return updatedCoreProfileFromDB;
 	};
 }
 
@@ -135,45 +170,42 @@ export const addUserToDirectory = (directoryId, profile) => {
 		const nodeApi = new WeaveAPI().create(cfg);
 		await nodeApi.init();
 		const session = await nodeApi.login(organization, pub, scope || "*");
-		const userRecords = new Records(tableUsers, [
+		const userRecords = new Records(table_dir_profile, [
 			[
 				undefined,
-				profile.id,
 				Number(directoryId),
-				JSON.stringify(profile.nickname),
-				JSON.stringify(profile.lastName),
-				JSON.stringify(profile.firstName),
-				JSON.stringify(profile.birthday),
+				profile.userId,
+				profile.nickname,
+				profile.lastName,
+				profile.firstName,
+				profile.birthday ? JSON.stringify(profile.birthday): undefined,
 				profile.lookingFor ? JSON.stringify(profile.lookingFor) : undefined,
-				JSON.stringify(profile.favorite_sushi),
-				JSON.stringify(profile.email),
-				JSON.stringify(profile.phone),
-				JSON.stringify(profile.country),
-				JSON.stringify(profile.state),
-				JSON.stringify(profile.city),
-				JSON.stringify(profile.jobTitle),
-				JSON.stringify(profile.company),
-				JSON.stringify(profile.linkedin),
-				JSON.stringify(profile.discord),
-				JSON.stringify(profile.telegram),
-				JSON.stringify(profile.twitter),
-				profile.wallet?.value,
-				profile.wallet?.show === 'true' || profile.wallet?.show === true ? 1 : 0,
+				profile.favorite_sushi,
+				profile.email,
+				profile.phone,
+				profile.address,
+				profile.jobTitle,
+				profile.company,
+				profile.linkedin,
+				profile.discord,
+				profile.telegram,
+				profile.twitter,
+				profile.wallet,
 				Date.now()
 			]
 		]);
 
-		await nodeApi.write(session, scope, userRecords, WeaveHelper.Options.WRITE_DEFAULT);
-		const filterOp = FilterOp.and(FilterOp.eq("userId", profile.id), FilterOp.eq("directoryId", Number(directoryId)))
+		const writeRes = await nodeApi.write(session, scope, userRecords, WeaveHelper.Options.WRITE_DEFAULT);
+		const filterOp = FilterOp.and(FilterOp.eq("userId", profile.userId), FilterOp.eq("directoryId", Number(directoryId)))
 		const filter = new Filter(filterOp, { "id": "DESC" }, 1, null, null, null);
-		const readRes = await nodeApi.read(session, scope, tableUsers, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+		const readRes = await nodeApi.read(session, scope, table_dir_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
 		const loadedDbProfile = readRes.data[0];
 		if (!loadedDbProfile) {
 			return;
 		}
 		dispatch({
 			type: ActionTypes.SET_DIR_PROFILE,
-			user: loadedDbProfile,
+			directoryProfile: loadedDbProfile,
 		});
 		return loadedDbProfile;
 	};
@@ -181,14 +213,14 @@ export const addUserToDirectory = (directoryId, profile) => {
 
 export const removeUserFromDirectory = async (directory, profile) => {
 	const filterOp = FilterOp.and(
-		FilterOp.eq("userId", profile.user.id),
-		FilterOp.eq("directoryId", Number(directory.id)));
+		FilterOp.eq("userId", profile.userId),
+		FilterOp.eq("directoryId", Number(directory.directoryId)));
 	const filter = new Filter(filterOp, null, null, null, null, null);
 
 	const nodeApi = new WeaveAPI().create(cfg);
 	await nodeApi.init();
 	const session = await nodeApi.login(organization, pub, scope || "*");
-	const deleteRes = await nodeApi.delete(session, scope, tableUsers, filter, WeaveHelper.Options.DELETE_DEFAULT);
+	const deleteRes = await nodeApi.delete(session, scope, table_dir_profile, filter, WeaveHelper.Options.DELETE_DEFAULT);
 	return deleteRes;
 };
 
@@ -198,51 +230,58 @@ export const getCoreProfileByEthAddress = async (ethAddress) => {
 	const filter = new Filter(filterOp, { "id": "DESC" }, 1, null, null, null);
 	await nodeApi.init();
 	const session = await nodeApi.login(organization, pub, scope || "*");
-	const readRes = await nodeApi.read(session, scope, tableUsers, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+	const readRes = await nodeApi.read(session, scope, table_core_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
 	return readRes.data ? readRes.data[0] : null;
 }
 
-export const getLoggedInDirIds = async (userId) => {
-	console.log("Getting logged in dir ids for user with id: " + userId);
+export const getCoreProfileByUserId = async (userId) => {
+	const nodeApi = new WeaveAPI().create(cfg);
+	await nodeApi.init();
+	const session = await nodeApi.login(organization, pub, scope || "*");
+
+	const filter = new Filter(FilterOp.eq("userId", userId), { "id": "DESC" }, 1, null, null, null);
+	const readRes = await nodeApi.read(session, scope, table_core_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+	return readRes.data ? readRes.data[0] : null;
+}
+
+export const getDirsOfUserId = async (userId) => {
 	const nodeApi = new WeaveAPI().create(cfg);
 	const filter = new Filter(FilterOp.eq("userId", userId), null, null, null, null, null);
 	await nodeApi.init();
 	const session = await nodeApi.login(organization, pub, scope || "*");
-	const readRes = await nodeApi.read(session, scope, tableUsers, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+	const readRes = await nodeApi.read(session, scope, table_dir_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
 	return readRes.data;
+}
+
+export const getAvgAge = async (directoryId) => {
+	const nodeApi = new WeaveAPI().create(cfg);
+	await nodeApi.init();
+	const session = await nodeApi.login(organization, pub, scope || "*");
+
+	const avg = await nodeApi.compute(session, "rolodex_avg_age", WeaveHelper.Options.COMPUTE_DEFAULT); 
+	return avg?.data?.output?.split('=')[1]?.split('}')[0];
 }
 
 export const setUserProfileForDirectory = (userId, directoryId) => {
 	return async dispatch => {
 		const nodeApi = new WeaveAPI().create(cfg);
 		const filterOp = FilterOp.and(FilterOp.eq("userId", userId), FilterOp.eq("directoryId", Number(directoryId)));
+		// TODO: postFilterOp to check on active column
 		const filter = new Filter(filterOp, { "id": "DESC" }, 1, null, null, null);
 		await nodeApi.init();
 		const session = await nodeApi.login(organization, pub, scope || "*");
-		const readRes = await nodeApi.read(session, scope, tableUsers, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+		const readRes = await nodeApi.read(session, scope, table_dir_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
 		if (!readRes.data) {
 			return null;
 		}
 		const directoryProfile = readRes.data[0];
 		if (!directoryProfile) {
-			return;
+			return null;
 		}
 		dispatch({
 			type: ActionTypes.SET_DIR_PROFILE,
-			user: directoryProfile,
+			directoryProfile: directoryProfile,
 		});
 		return directoryProfile;
 	}
 }
-
-export const getUserProfileByDirectory = (directoryId) => {
-	return (dispatch) => {
-		return new Promise((resolve) => {
-			dispatch({
-				type: ActionTypes.GET_DIR_PROFILE,
-			});
-
-			resolve({});
-		});
-	};
-};

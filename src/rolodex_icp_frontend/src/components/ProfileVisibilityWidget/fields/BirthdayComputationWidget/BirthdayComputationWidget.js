@@ -22,7 +22,6 @@ export default function BirthdayComputationWidget({
 	const [displayText, setDisplayText] = useState(null);
 	const [format, setFormat] = useState(null);
 
-	const show = profile.birthday?.show;
 	const value = profile.birthday?.value;
 
 	useEffect(() => {

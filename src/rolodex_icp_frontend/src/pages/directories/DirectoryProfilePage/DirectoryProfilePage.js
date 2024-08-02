@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,26 +11,25 @@ import TabsWidget from "../../../components/TabsWidget/TabsWidget";
 import ProfileViewWidget from "../../../components/ProfileViewWidget/ProfileViewWidget";
 import RoloButton from "../../../components/RoloButton/RoloButton";
 import LeaveDirectoryDialog from "../../../components/LeaveDirectoryDialog/LeaveDirectoryDialog";
-import PencilIcon from "../../../components/icons/PencilIcon";
 import { setUserProfileForDirectory } from "../../../_redux/actions/directories";
 
 export default function DirectoryProfilePage() {
 	const history = useHistory();
-	const { id } = useParams() || {};
 	const dispatch = useDispatch();
+	const { id } = useParams() || {};
 
 	const [showDialog, setShowDialog] = useState(false);
 
-	let loggedInUser = useSelector(state => state.user.user);
+	let directoryProfile = useSelector(state => state.user.directoryProfile);
 
 	const { directories = [] } = useSelector((state) => state.directories);
-	const directory = directories.find((d) => d.id === id);
-	useEffect(() => {
-		dispatch(setUserProfileForDirectory(loggedInUser.id, id))
-			.then(r => setHasJoined(r));
-	}, []);
+	const directory = directories.find((d) => d.directoryId === id);
 
 	let [hasJoined, setHasJoined] = useState(false);
+	useEffect(() => {
+		dispatch(setUserProfileForDirectory(directoryProfile.userId, id))
+			.then(r => setHasJoined(r));
+	}, []);
 
 	if (!directory) {
 		history.push(AppRoutes.home);
@@ -46,21 +45,15 @@ export default function DirectoryProfilePage() {
 				/>
 			) : null}
 
-			<Header title="My Directory Profile" showBack>
-				<div className={s.headerIcon}>
-					<a href={`#${AppRoutes.directories}/${id}/profile/edit`}>
-						<PencilIcon />
-					</a>
-				</div>
-			</Header>
+			<Header title="My Directory Profile" showBack />
 
 			{hasJoined ? (
 				<TabsWidget
 					tabs={[
-						{ name: "About", url: `${AppRoutes.directories}/${directory.id}` },
+						{ name: "About", url: `${AppRoutes.directories}/${directory.directoryId}` },
 						{
 							name: "Members",
-							url: `${AppRoutes.directories}/${directory.id}/members`,
+							url: `${AppRoutes.directories}/${directory.directoryId}/members`,
 						},
 						{
 							name: "My Dir. Profile",
@@ -71,7 +64,7 @@ export default function DirectoryProfilePage() {
 			) : null}
 
 			<div className={s.content}>
-				<ProfileViewWidget profile={loggedInUser} directory={directory} />
+				<ProfileViewWidget profile={directoryProfile} directory={directory} isNested={false}/>
 
 				<div className={s.buttons}>
 					<RoloButton

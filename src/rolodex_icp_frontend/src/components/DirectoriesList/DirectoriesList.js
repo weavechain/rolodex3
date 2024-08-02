@@ -22,7 +22,7 @@ export default function DirectoriesList({ directories = [] }) {
 
 	const viewDetails = (directory) => {
 		dispatch(setCurrentDirectory(directory)).then(() => {
-			history.push(`${AppRoutes.directories}/${directory.id}`);
+			history.push(`${AppRoutes.directories}/${directory.directoryId}`);
 		});
 	};
 

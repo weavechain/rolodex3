@@ -1108,7 +1108,7 @@ class ClientHttp {
         return this.authPost(session, "plugin_call", data);
     }
 
-    async emailAuth(org, clientPubKey, targetWebUrl, email) {
+    async emailAuth(org, clientPubKey, targetWebUrl, email, targetApp) {
         let toSign = clientPubKey + "\n" + email
         let signature = this.apiContext.createEd25519Signature(toSign)
         let data = {
@@ -1116,6 +1116,7 @@ class ClientHttp {
             "clientPubKey": clientPubKey,
             "targetEmail": email,
             "targetWebUrl": targetWebUrl,
+            "targetApp": targetApp,
             "signature": signature,
             "x-sig-key": this.apiContext.sigKey
         }

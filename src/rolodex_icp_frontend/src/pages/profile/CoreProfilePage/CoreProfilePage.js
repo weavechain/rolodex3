@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useMetaMask } from "metamask-react";
 
-import { addUserToDirectory, setUserProfileForDirectory } from "../../../_redux/actions/directories";
+import { updateCoreProfile } from "../../../_redux/actions/directories";
 import { getProfileInfo } from "../../../helpers/Utils";
 
 import s from "./CoreProfilePage.module.scss";
@@ -21,7 +21,6 @@ import ProfileGenericField from "./fields/ProfileGenericField";
 import ProfileCountry from "./fields/ProfileCountry";
 import ProfileLookingFor from "./fields/ProfileLookingFor";
 import ProfileSushi from "./fields/ProfileSushi";
-//import ViewAsWidget from "../../../components/metamask/ViewAsWidget/ViewAsWidget";
 
 export default function CoreProfilePage() {
 	const dispatch = useDispatch();
@@ -32,47 +31,22 @@ export default function CoreProfilePage() {
 	const [userModel, setUserModel] = useState({});
 	const [isEditMode, setIsEditMode] = useState(false);
 
-	const reduxDirectories = useSelector(state => state.directories);
-	const coreDirectory = reduxDirectories.directories.filter(d => d.is_core_directory === 1)[0];
-	const loggedInUser = useSelector(state => state.user);
-
-	const [profile, setProfile] = useState(null);
+	const coreProfile = useSelector(state => state.user.coreProfile);
 
 	useEffect(() => {
-		if (!loggedInUser.user) {
+		if (!coreProfile) {
 			return;
 		}
-		if (loggedInUser.user.directoryId === Number(coreDirectory.id)) { // current user profile is the coreDirectory profile
-			setProfile(loggedInUser.user);
-			return;
-		}
-		dispatch(setUserProfileForDirectory(loggedInUser.user.id, coreDirectory.id))
-			.then(r => {
-				if (!r) { // user doesn't have a coreDirectory profile
-					return;
-				}
-			});
-	}, [loggedInUser]);
-
-	useEffect(() => {
-		if (profile) {
-			setUserModel(profile);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [profile]);
+		setUserModel(coreProfile);
+	}, [coreProfile]);
 
 	// ------------------------------------- METHODS -------------------------------------
 	const updateModel = (key, value) => {
-		const oldData = userModel[key] || {};
 		setIsEditMode(true);
 
 		const userData = {
 			...userModel,
-			[key]: {
-				...oldData,
-				value,
-				show: true,
-			},
+			[key]: value
 		};
 
 		setUserModel(userData);
@@ -84,7 +58,7 @@ export default function CoreProfilePage() {
 
 	const isValid = () => {
 		return (
-			(account ? true : userModel?.email?.value) && userModel?.nickname?.value
+			(account ? true : userModel?.email) && userModel?.nickname
 		);
 	};
 
@@ -92,7 +66,7 @@ export default function CoreProfilePage() {
 		if (!isValid()) return;
 
 		setIsEditMode(false);
-		dispatch(addUserToDirectory(coreDirectory.id, userModel));
+		dispatch(updateCoreProfile(userModel));
 	};
 
 	return (

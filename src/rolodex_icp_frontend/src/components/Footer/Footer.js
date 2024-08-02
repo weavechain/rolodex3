@@ -20,7 +20,7 @@ export default function Footer({ page, showFooter, className = "", search }) {
 
 	const contacts = useSelector((state) => state.contacts);
 	const { CORE_PROFILE } = useSelector((state) => state.directories);
-	const user = useSelector(state => state.user.user);
+	const user = useSelector(state => state.user.coreProfile);
 	const notificationsCount = AppHelper.getNotificationsCount(contacts);
 
 	const isLoggedIn = !!account || !!CORE_PROFILE || showFooter || user;

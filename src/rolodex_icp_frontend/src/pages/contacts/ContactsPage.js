@@ -18,10 +18,10 @@ export default function ContactsPage() {
 	const reduxContacts = useSelector(state => state.contacts);
 	const directories = useSelector(state => state.directories).directories;
 	const [contacts, setContacts] = useState([]);
-	const profile = useSelector(state => state.user);
+	const coreProfile = useSelector(state => state.user.coreProfile);
 
 	useEffect(() => {
-		dispatch(loadContactsOfProfile(profile, directories));
+		dispatch(loadContactsOfProfile(coreProfile.userId, directories));
 	}, []);
 
 	useEffect(() => {

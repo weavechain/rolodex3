@@ -7,8 +7,6 @@ import s from "./Header.module.scss";
 import ArrowLeftIcon from "../../components/icons/ArrowLeftIcon";
 
 export default function Header({
-	user,
-	hasAvatar = true,
 	className = "",
 	title,
 	children,

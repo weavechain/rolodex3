@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 
-import { getProfileInfo } from "../../helpers/Utils";
+import { getDirectoryProfileInfo, getProfileInfo } from "../../helpers/Utils";
 
 import s from "./ProfileVisibilityWidget.module.scss";
 
@@ -18,27 +18,26 @@ import LookingForWidget from "./fields/LookingForWidget/LookingForWidget";
 import MetamaskConnectButton from "../metamask/MetamaskAccountWidget/MetamaskConnectButton";
 
 export default function ProfileVisibilityWidget({
-	profile = {},
+	directoryProfile = {},
 	directory,
 	updateProfile = () => { },
 }) {
-	const email = getProfileInfo(profile, "email");
-	const wallet = getProfileInfo(profile, "wallet");
-	const twitterHandle = getProfileInfo(profile, "twitter");
-	const linkedinUrl = getProfileInfo(profile, "linkedin");
-	const sushi = getProfileInfo(profile, "favorite_sushi");
-	const phone = getProfileInfo(profile, "phone");
-	const telegram = getProfileInfo(profile, "telegram");
-	const discord = getProfileInfo(profile, "discord");
-	const lookingFor = profile.lookingFor;
-	const jobTitle = profile.jobTitle;
+	const email = getDirectoryProfileInfo(directoryProfile, "email");
+	const wallet = getDirectoryProfileInfo(directoryProfile, "wallet");
+	const twitterHandle = getDirectoryProfileInfo(directoryProfile, "twitter");
+	const linkedinUrl = getDirectoryProfileInfo(directoryProfile, "linkedin");
+	const sushi = getDirectoryProfileInfo(directoryProfile, "favorite_sushi");
+	const phone = getDirectoryProfileInfo(directoryProfile, "phone");
+	const telegram = getDirectoryProfileInfo(directoryProfile, "telegram");
+	const discord = getDirectoryProfileInfo(directoryProfile, "discord");
+	const lookingFor = directoryProfile.lookingFor;
+	const jobTitle = directoryProfile.jobTitle;
 
 	// ------------------------------------- METHODS -------------------------------------
 	const updateVisibility = (key, show) => {
-		show = show + ""
-		const oldData = profile[key] || {};
+		const oldData = directoryProfile[key] || {};
 		const model = {
-			...profile,
+			...directoryProfile,
 			[key]: { ...oldData, show },
 		};
 
@@ -68,12 +67,12 @@ export default function ProfileVisibilityWidget({
 				<div className={s.sectionHeader}>
 					<div className={s.title}>Profile Image</div>
 					<ToggleWidget
-						isVisible={profile?.avatar?.show}
+						isVisible={directoryProfile?.avatar?.show}
 						onToggle={(val) => updateVisibility("avatar", val)}
 					/>
 				</div>
 				<div className={s.sectionText}>
-					<AvatarWidget avatar={getProfileInfo(profile, "avatar")} />
+					<AvatarWidget avatar={getProfileInfo(directoryProfile, "avatar")} />
 				</div>
 			</div>
 
@@ -82,7 +81,7 @@ export default function ProfileVisibilityWidget({
 				<div className={s.sectionHeader}>
 					<div className={s.title}>Wallet Address</div>
 					<ToggleWidget
-						isVisible={profile?.wallet?.show === "true" || profile?.wallet?.show === true }
+						isVisible={directoryProfile?.wallet?.show}
 						onToggle={(val) => {
 							if (wallet)
 								updateVisibility("wallet", val)
@@ -94,7 +93,7 @@ export default function ProfileVisibilityWidget({
 						hideInfo
 						callback={(wallet) =>
 							updateProfile({
-								...profile,
+								...directoryProfile,
 								wallet: { value: wallet, show: true },
 							})
 						}
@@ -102,7 +101,7 @@ export default function ProfileVisibilityWidget({
 				) : (
 					<div
 						className={cx(s.sectionText, s.wallet, {
-							[s.restricted]: !profile?.wallet?.show,
+							[s.restricted]: !directoryProfile?.wallet?.show,
 						})}
 					>
 						{wallet}
@@ -116,13 +115,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Email</div>
 						<ToggleWidget
-							isVisible={profile?.email?.show}
+							isVisible={directoryProfile?.email?.show}
 							onToggle={(val) => updateVisibility("email", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, s.email, {
-							[s.restricted]: !profile?.email?.show,
+							[s.restricted]: !directoryProfile?.email?.show,
 						})}
 					>
 						<a href={`mailto:${email}`}>{email}</a>
@@ -133,27 +132,27 @@ export default function ProfileVisibilityWidget({
 			{/* NAME */}
 			<div className={s.section}>
 				<NameComputationWidget
-					profile={profile}
-					updateModel={(name) => updateProfile({ ...profile, name })}
+					profile={directoryProfile}
+					updateModel={(name) => updateProfile({ ...directoryProfile, name })}
 				/>
 			</div>
 
 			{/* ADDRESS */}
-			{profile.country ? (
+			{directoryProfile.country ? (
 				<div className={s.section}>
 					<AddressComputationWidget
-						profile={profile}
-						updateModel={(address) => updateProfile({ ...profile, address })}
+						profile={directoryProfile}
+						updateModel={(address) => updateProfile({ ...directoryProfile, address })}
 					/>
 				</div>
 			) : null}
 
 			{/* BIRTHDAY */}
-			{profile.birthday ? (
+			{directoryProfile.birthday ? (
 				<div className={s.section}>
 					<BirthdayComputationWidget
-						profile={profile}
-						updateModel={(birthday) => updateProfile({ ...profile, birthday })}
+						profile={directoryProfile}
+						updateModel={(birthday) => updateProfile({ ...directoryProfile, birthday })}
 					/>
 				</div>
 			) : null}
@@ -164,7 +163,7 @@ export default function ProfileVisibilityWidget({
 					<LookingForWidget
 						data={lookingFor}
 						updateModel={(looking) =>
-							updateProfile({ ...profile, lookingFor: looking })
+							updateProfile({ ...directoryProfile, lookingFor: looking })
 						}
 					/>
 				</div>
@@ -176,13 +175,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Favorite Sushi</div>
 						<ToggleWidget
-							isVisible={profile?.favorite_sushi?.show === true || profile?.favorite_sushi?.show === "true"}
+							isVisible={directoryProfile?.favorite_sushi?.show === true || directoryProfile?.favorite_sushi?.show === "true"}
 							onToggle={(val) => updateVisibility("favorite_sushi", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, {
-							[s.restricted]: !profile?.favorite_sushi?.show,
+							[s.restricted]: !directoryProfile?.favorite_sushi?.show,
 						})}
 					>
 						{sushi}
@@ -195,7 +194,7 @@ export default function ProfileVisibilityWidget({
 				<div className={s.section}>
 					<JobTitleWidget
 						data={jobTitle}
-						updateModel={(job) => updateProfile({ ...profile, jobTitle: job })}
+						updateModel={(job) => updateProfile({ ...directoryProfile, jobTitle: job })}
 					/>
 				</div>
 			) : null}
@@ -203,8 +202,8 @@ export default function ProfileVisibilityWidget({
 			{/* COMPANY */}
 			<div className={s.section}>
 				<CompanyWidget
-					data={profile?.company}
-					updateModel={(company) => updateProfile({ ...profile, company })}
+					data={directoryProfile?.company}
+					updateModel={(company) => updateProfile({ ...directoryProfile, company })}
 				/>
 			</div>
 
@@ -214,13 +213,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Phone</div>
 						<ToggleWidget
-							isVisible={profile?.phone?.show}
+							isVisible={directoryProfile?.phone?.show}
 							onToggle={(val) => updateVisibility("phone", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, {
-							[s.restricted]: !profile?.phone?.show,
+							[s.restricted]: !directoryProfile?.phone?.show,
 						})}
 					>
 						{phone}
@@ -234,13 +233,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>LinkedIn</div>
 						<ToggleWidget
-							isVisible={profile?.linkedin?.show}
+							isVisible={directoryProfile?.linkedin?.show}
 							onToggle={(val) => updateVisibility("linkedin", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, s.blue, {
-							[s.restricted]: !profile?.linkedin?.show,
+							[s.restricted]: !directoryProfile?.linkedin?.show,
 						})}
 					>
 						<a href={linkedinUrl} target="_blank" rel="noreferrer">
@@ -256,13 +255,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Discord</div>
 						<ToggleWidget
-							isVisible={profile?.discord?.show}
+							isVisible={directoryProfile?.discord?.show}
 							onToggle={(val) => updateVisibility("discord", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, {
-							[s.restricted]: !profile?.discord?.show,
+							[s.restricted]: !directoryProfile?.discord?.show,
 						})}
 					>
 						{discord}
@@ -276,13 +275,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Telegram</div>
 						<ToggleWidget
-							isVisible={profile?.telegram?.show}
+							isVisible={directoryProfile?.telegram?.show}
 							onToggle={(val) => updateVisibility("telegram", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, {
-							[s.restricted]: !profile?.telegram?.show,
+							[s.restricted]: !directoryProfile?.telegram?.show,
 						})}
 					>
 						{telegram}
@@ -296,13 +295,13 @@ export default function ProfileVisibilityWidget({
 					<div className={s.sectionHeader}>
 						<div className={s.title}>Twitter</div>
 						<ToggleWidget
-							isVisible={profile?.twitter?.show && (profile?.twitter?.show === "true" || profile?.twitter?.show === true)}
+							isVisible={directoryProfile?.twitter?.show && (directoryProfile?.twitter?.show === "true" || directoryProfile?.twitter?.show === true)}
 							onToggle={(val) => updateVisibility("twitter", val)}
 						/>
 					</div>
 					<div
 						className={cx(s.sectionText, {
-							[s.restricted]: !profile?.twitter?.show,
+							[s.restricted]: !directoryProfile?.twitter?.show,
 						})}
 					>
 						<a href={`${AppConfig.TWITTER_URL}${twitterHandle}`}>

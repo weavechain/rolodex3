@@ -3,7 +3,7 @@ import cx from "classnames";
 
 import s from "./GenericFieldEditor.module.scss";
 
-import { getProfileInfo } from "../../../../../../helpers/Utils";
+import { getDirectoryProfileInfo, getProfileInfo } from "../../../../../../helpers/Utils";
 
 import InputWidget from "../../../../../../components/InputWidget/InputWidget";
 import ToggleWidget from "../../../../../../components/ToggleWidget/ToggleWidget";
@@ -22,8 +22,8 @@ export default function GenericFieldEditor({
 }) {
 	if (!profile || !profile[name])
 		return (<></>);
-	const value = getProfileInfo(profile, name) || "";
-	const show = profile[name]?.show && ((profile[name]?.show === true || profile[name]?.show === 'true'));
+	const value = getDirectoryProfileInfo(profile, name) || "";
+	const show = profile[name]?.show;
 	const isRequested = requestedFields.includes(name);
 	const isEditMode = isRequested && !value;
 

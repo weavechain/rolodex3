@@ -9,22 +9,22 @@ import Footer from "../../../components/Footer/Footer";
 import AppRoutes from "../../../helpers/AppRoutes";
 import DirectoriesList from "../../../components/DirectoriesList/DirectoriesList";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
-import { getLoggedInDirIds } from "../../../_redux/actions/directories";
+import { getDirsOfUserId } from "../../../_redux/actions/directories";
 
 export default function MyDirectoriesPage() {
 	const [data, setData] = useState([]);
 	const [myDirectories, setMyDirectories] = useState([]);
-	const { directories = [] } = useSelector((state) => state.directories);
-	const profile = useSelector(state => state.user);
+	const directories = useSelector((state) => state.directories.directories);
+	const userId = useSelector(state => state.user?.coreProfile?.userId);
 
 	useEffect(() => {
-		if (!profile.user) {
+		if (!userId) {
 			return;
 		}
-		getLoggedInDirIds(profile.user.id)
+		getDirsOfUserId(userId)
 			.then(dirs => {
 				const userDirIds = dirs.map(d => Number(d.directoryId));
-				const newMyDirectories = directories.filter(d => userDirIds.includes(Number(d.id)));
+				const newMyDirectories = directories.filter(d => userDirIds.includes(Number(d.directoryId)));
 				if (newMyDirectories !== myDirectories) {
 					setMyDirectories(newMyDirectories);
 				}

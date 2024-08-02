@@ -1,4 +1,4 @@
-const isLocal = 1;
+const isLocal = 0;
 const wevSeed = "aeb5e91eb00aa33ad221fc1ade75da57";
 const AppConfig = {
 	AppName: "RoloDEX",

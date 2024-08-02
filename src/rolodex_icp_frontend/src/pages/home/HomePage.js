@@ -18,13 +18,14 @@ export default function HomePage() {
 	const { directories } = useSelector(
 		(state) => state.directories
 	);
-	const { user: profile = {} } = useSelector(state => state.user);
-	const myDirectories = []; //directories.filter((d) => !!d.profile);
+	const coreProfile = useSelector(state => state.user.coreProfile);
+	const myDirectories = [];
 
 	const name =
-		profile?.name?.value ||
-		profile?.nickname?.value ||
-		profile?.email?.value ||
+		coreProfile?.nickname ||
+		coreProfile?.firstName ||
+		coreProfile?.lastName ||
+		coreProfile?.email ||
 		"user";
 
 	// ------------------------------------- METHODS -------------------------------------
@@ -40,9 +41,9 @@ export default function HomePage() {
 
 			<div className={s.content}>
 				{
-					profile
+					coreProfile
 						? (<a className={s.avatarContainer} href={`#${AppRoutes.profile}/core`}>
-							<AvatarWidget avatar={profile.avatar?.value} />
+							<AvatarWidget avatar={coreProfile.avatar?.value} />
 							<p>Edit profile</p>
 						</a>)
 						: null

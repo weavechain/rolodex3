@@ -30,7 +30,7 @@ export default function RespondViewProfile() {
 			/>
 
 			<div className={s.content}>
-				<ProfileViewWidget profile={CURRENT_CONTACT.requestor} />
+				<ProfileViewWidget profile={CURRENT_CONTACT} isNested={false}/>
 			</div>
 		</div>
 	);

@@ -3,14 +3,13 @@ import AppConfig from "../AppConfig";
 import LOCAL_STORAGE from "./localStorage";
 import { generateAndSendMagicLink } from "../_redux/actions/user";
 
-const LOGIN_TOKEN = "123123";
-
 // ------------------------------------- PROFILE -------------------------------------
 export const DISPLAY_FIELDS = [
-	{ key: "directories", name: "Common Directories" },
+	// { key: "directories", name: "Common Directories" },
 	{ key: "wallet", name: "Wallet" },
 	{ key: "email", name: "Email" },
 	{ key: "name", name: "Name" },
+	{ key: "nickname", name: "Nickname" },
 	{ key: "birthday", name: "Birthday" },
 	{ key: "address", name: "Address" },
 	{ key: "phone", name: "Phone" },
@@ -41,19 +40,18 @@ const hasJoinedDirectory = (directoryId) => {
 
 // ------------------------------------- MAGIC LINK -------------------------------------
 const sendMagicLink = (email) => {
-	const host = isLocalhost ? "http://localhost:3000" : AppConfig.AppUrl;
-	const link = `${host}/#/login/${LOGIN_TOKEN}`;
+	const host = isLocalhost ? "http://localhost:3000/#/login/" : "https://rolodex.weavechain.com/#/login/";
 
 	return _sendEmail({
 		to: email,
 		subject: "Join me on RoloDEX!",
-		body: encodeURIComponent(link),
+		urlHost: host
 	});
 };
 
 // ------------------------------------- PRIVATE -------------------------------------
-const _sendEmail = ({ to, subject, body }) => {
-	return generateAndSendMagicLink(to);
+const _sendEmail = ({ to, subject, body, urlHost }) => {
+	return generateAndSendMagicLink(to, urlHost);
 	// return new Promise((resolve) => {
 	// 	const url = `mailto:${to}?subject=${subject}&body=${body}`;
 

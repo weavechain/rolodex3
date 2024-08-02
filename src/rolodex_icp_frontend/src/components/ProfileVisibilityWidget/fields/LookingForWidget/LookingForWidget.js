@@ -17,6 +17,8 @@ export default function LookingForWidget({ data, updateModel = () => {} }) {
 		const optionsList = data?.value || [];
 
 		let select = {};
+		// TODO: if plain list than old flow
+		//       if map {Collaborators: true, Networking: false} => then what is with true
 		optionsList.forEach((opt) => (select[opt] = true));
 
 		setSelected(select);
@@ -32,8 +34,9 @@ export default function LookingForWidget({ data, updateModel = () => {} }) {
 	};
 
 	const toggleSelection = (name, isSelected) => {
-		setSelected({ ...selected, [name]: isSelected });
-		//updateModel({ ...data, value: options.filter((name) => selected[name]) });
+		let newSelected = { ...selected, [name]: isSelected };
+		setSelected(newSelected);
+		updateModel({ ...data, value: newSelected });
 	};
 
 	const toggleShow = (isVisible) => {

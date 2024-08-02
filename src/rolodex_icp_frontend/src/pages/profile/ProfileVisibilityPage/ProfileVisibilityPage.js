@@ -8,16 +8,37 @@ import RoloButton from "../../../components/RoloButton/RoloButton";
 import ProfileVisibilityWidget from "../../../components/ProfileVisibilityWidget/ProfileVisibilityWidget";
 
 export default function ProfileVisibilityPage({
-	profile = {},
+	coreProfile = {},
 	directory,
-	onSubmit = () => {},
-	onBack = () => {},
+	setParentDirectoryProfile = () => { },
+	onSubmit = () => { },
+	onBack = () => { },
 }) {
-	const [visibleProfile, setVisibleProfile] = useState({});
+	const [directoryProfile, setDirectoryProfile] = useState({});
 
 	useEffect(() => {
-		setVisibleProfile(profile);
-	}, [profile]);
+		let dirProfileBuilder = {};
+		for (const [key, value] of Object.entries(coreProfile)) {
+			if (value)
+				dirProfileBuilder[key] = { value: value, show: true };
+		}
+		if (!dirProfileBuilder.name) {
+			dirProfileBuilder.name = { show: "nickname", value: dirProfileBuilder.nickname.value };
+		}
+		if (!dirProfileBuilder.address) {
+			if (dirProfileBuilder.city?.value || dirProfileBuilder.state?.value || dirProfileBuilder.country?.value) {
+				let fullAddress = [dirProfileBuilder.city?.value, dirProfileBuilder.state?.value, dirProfileBuilder.country?.value].join(", ");
+				dirProfileBuilder.address = { show: "city, state, & country", value: fullAddress };
+			}
+		}
+		setDirectoryProfile(dirProfileBuilder);
+		setParentDirectoryProfile(dirProfileBuilder);
+	}, [coreProfile]);
+
+	const updateDirectoryProfile = (newDirectoryProfile) => {
+		setDirectoryProfile(newDirectoryProfile);
+		setParentDirectoryProfile(newDirectoryProfile);
+	}
 
 	return (
 		<div className={s.root}>
@@ -26,14 +47,14 @@ export default function ProfileVisibilityPage({
 			<div className={s.content}>
 				<ProfileVisibilityWidget
 					directory={directory}
-					profile={visibleProfile}
-					updateProfile={setVisibleProfile}
+					directoryProfile={directoryProfile}
+					updateProfile={updateDirectoryProfile}
 				/>
 
 				<div className={cx(s.section, s.buttons)}>
 					<RoloButton
 						text="Preview Directory Profile"
-						onClick={() => onSubmit(visibleProfile)}
+						onClick={() => onSubmit(coreProfile, directoryProfile)}
 					/>
 				</div>
 			</div>

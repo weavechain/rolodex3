@@ -3,57 +3,52 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { getListNameForAccount, hasItems } from "../../helpers/Utils";
-import { setCurrentContact } from "../../_redux/actions/contacts";
+import { setCurrentGiving } from "../../_redux/actions/contacts";
 
-import s from "./ContactsList.module.scss";
+import s from "./GivingsToMeList.module.scss";
 
 import ArrowRightIcon from "../icons/ArrowRightIcon";
 import EmptyImage from "../../assets/images/general/empty-directories.svg";
 import AppRoutes from "../../helpers/AppRoutes";
 
-export default function ContactsList({
-	contacts = [],
+export default function GivingsToMeList({
+	givings = [],
 	showNewEntries = false,
-	onContactSelected,
 }) {
 	const dispatch = useDispatch();
 	const history = useHistory();
 
 	// ------------------------------------- METHODS -------------------------------------
-	const viewContactDetails = (contact) => {
+	const viewGivingDetails = (giving) => {
 		dispatch(
-			setCurrentContact({
-				...contact,
+			setCurrentGiving({
+				...giving,
 				seen: false,
 			})
 		).then(() => {
-			if (onContactSelected) {
-				onContactSelected(contact);
-			} else {
-				history.push(`${AppRoutes.contacts}/${contact.userId}`);
-			}
+			history.push(`${AppRoutes.contacts}/${giving.giver.userId}`);
 		});
 	};
 
 	return (
 		<div className={s.root}>
-			{hasItems(contacts) ? (
+			{hasItems(givings) ? (
 				<>
-					{contacts.map((c, index) => (
+					{givings.map((g, index) => (
 						<div
 							key={index}
 							className={s.directory}
-							onClick={() => viewContactDetails(c)}
+							onClick={() => viewGivingDetails(g)}
 						>
 							<div className={s.info}>
-								<div className={s.name}>{getListNameForAccount(c)}</div>
+								<div className={s.name}>{getListNameForAccount(g.giver)}</div>
 								<div className={s.description}>
-									<span className={showNewEntries && !c.was_seen ? s.new : ""}>
-										{new Date(Number(c.ts)).toISOString().split('T')[0]}
+									<span className={showNewEntries && !g.was_seen ? s.new : ""}>
+										{new Date(Number(g.giver.ts)).toISOString().split('T')[0]}
 									</span>
 									<span className={s.separator}>|</span>
 									<span className={s.directories}>
-										{(c.directories || []).join(", ")}
+										{(g.directories || []).join(", ")}
 									</span>
 								</div>
 							</div>

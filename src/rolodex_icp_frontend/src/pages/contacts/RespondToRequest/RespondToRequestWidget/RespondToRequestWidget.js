@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 
-import { getProfileInfo } from "../../../../helpers/Utils";
+import { getDirectoryProfileInfo } from "../../../../helpers/Utils";
 
 import s from "./RespondToRequestWidget.module.scss";
 
@@ -18,9 +18,9 @@ import GenericFieldEditor from "./fields/GenericFieldEditor/GenericFieldEditor";
 export default function RespondToRequestWidget({
 	profile = {},
 	requestedFields = [],
-	updateProfile = () => {},
+	updateProfile = () => { },
 }) {
-	const wallet = getProfileInfo(profile, "wallet");
+	const wallet = getDirectoryProfileInfo(profile, "wallet");
 	const lookingFor = profile.lookingFor;
 
 	// ------------------------------------- METHODS -------------------------------------
@@ -57,7 +57,7 @@ export default function RespondToRequestWidget({
 						Wallet Address
 					</div>
 					<ToggleWidget
-						isVisible={profile?.wallet?.show === "true" || profile?.wallet?.show === true}
+						isVisible={profile?.wallet}
 						onToggle={(val) => updateVisibility("wallet", val)}
 					/>
 				</div>

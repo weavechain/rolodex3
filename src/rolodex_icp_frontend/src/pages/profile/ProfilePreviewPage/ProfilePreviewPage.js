@@ -20,7 +20,7 @@ export default function ProfilePreviewPage({
 			<Header title="Join Directory" goBack={onBack} />
 
 			<div className={s.content}>
-				<ProfileViewWidget profile={profile} directory={CURRENT_DIRECTORY} />
+				<ProfileViewWidget profile={profile} directory={CURRENT_DIRECTORY} isNested={true} />
 
 				<div className={cx(s.section, s.buttons)}>
 					<RoloButton text="Join Directory" onClick={onSubmit} />

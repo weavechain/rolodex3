@@ -28,7 +28,7 @@ export default function ProfileMainFields({
 	// ------------------------------------- METHODS -------------------------------------
 	const isValid = () => {
 		return (
-			(account ? true : userModel?.email?.value) && userModel?.nickname?.value
+			(account ? true : userModel?.email) && userModel?.nickname
 		);
 	};
 

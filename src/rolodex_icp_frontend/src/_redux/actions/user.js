@@ -1,12 +1,11 @@
 import { base58_to_binary } from "base58-js";
-import AppHelper from "../../helpers/AppHelper";
 import LOCAL_STORAGE from "../../helpers/localStorage";
 import WeaveHelper from "../../weaveapi/helper";
 import WeaveAPI from "../../weaveapi/weaveapi";
 import { ActionTypes } from "../constants";
 import { Filter, FilterOp } from "../../weaveapi/filter";
-import AppRoutes from "../../helpers/AppRoutes";
 import AppConfig from "../../AppConfig";
+import { assureCoreProfileIsUiFormat } from "../reducers/user";
 
 // TODO: where to get keys from?
 const pub = "weaved8xLnTMp5B5GtJwDQvc1u7K4fwPc2ry7iDieyCdJRHcG";
@@ -17,28 +16,10 @@ const node = AppConfig.WEV_NODE;
 const encrypted = node.startsWith("http://");
 const organization = "icprolodex";
 const scope = "rolodex";
-const tableUsers = "users";
+let table_core_profile = "core_profile";
+let table_dir_profile = "directory_profile";
 
 const cfg = WeaveHelper.getConfig(node, pub, pvk, encrypted)
-
-export const loginUser = (user) => {
-	return (dispatch) => {
-		let oldState = LOCAL_STORAGE.loadState() || {};
-		LOCAL_STORAGE.saveState({
-			...(oldState || {}),
-			user,
-		});
-
-		return new Promise((resolve) => {
-			dispatch({
-				type: ActionTypes.LOGIN_SUCCESS,
-				user,
-			});
-
-			resolve("success");
-		});
-	};
-};
 
 export const logoutUser = () => {
 	return (dispatch) => {
@@ -55,37 +36,52 @@ export const logoutUser = () => {
 	};
 };
 
-export const generateAndSendMagicLink = async (to) => {
+export const generateAndSendMagicLink = async (to, urlHost) => {
 	const nodeApi = new WeaveAPI().create(cfg);
 	await nodeApi.init();
-	await nodeApi.emailAuth(organization, pub, "localhost:3000/#/login/" + to, to);
+	await nodeApi.emailAuth(organization, pub, urlHost + to, to);
+}
+
+export const getDirectoryProfile = async (dirId, userId) => {
+	const nodeApi = new WeaveAPI().create(cfg);
+	await nodeApi.init();
+	const session = await nodeApi.login(organization, pub, scope || "*");
+
+	let filterOp = FilterOp.and(
+		FilterOp.eq("directoryId", dirId),
+		FilterOp.eq("userId", userId)
+	);
+	let filter = new Filter(filterOp, null, 1, null, null, null);
+
+	let readRes = await nodeApi.read(session, scope, table_dir_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+
+	if (!readRes.data || !readRes.data.length === 1)
+		return null;
+	return assureCoreProfileIsUiFormat(readRes.data[0]);
 }
 
 // ------------------------------------- MAGIC LINK -------------------------------------
 export const loadUserFromMagicLink = (urlEmail, urlToken) => {
 	return async dispatch => {
-		const tokenBase58 = urlToken.split("-")[0];
-		const token = new TextDecoder().decode(base58_to_binary(tokenBase58));
-
 		const nodeApi = new WeaveAPI().create(cfg);
 		await nodeApi.init();
 		const session = await nodeApi.login(organization, null, scope, { email_token: urlToken })
 
-		const filterOp = FilterOp.contains("email", urlEmail);
+		const filterOp = FilterOp.eq("email", urlEmail);
 		const filter = new Filter(filterOp, { "id": "DESC" }, 1, null, null, null);
 		await nodeApi.init();
-		const readRes = await nodeApi.read(session, scope, tableUsers, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
+		const readRes = await nodeApi.read(session, scope, table_core_profile, filter, WeaveHelper.Options.READ_DEFAULT_NO_CHAIN);
 
 		if (!readRes.data) {
 			console.log("No user found");
 			return "No user found"
 		}
-		const user = readRes.data[0];
+		const coreProfile = readRes.data[0];
 
 		dispatch({
-			type: ActionTypes.LOGIN_SUCCESS,
-			user: user,
+			type: ActionTypes.LOAD_CORE_PROFILE,
+			coreProfile: coreProfile,
 		});
-		return user;
+		return coreProfile;
 	}
 };

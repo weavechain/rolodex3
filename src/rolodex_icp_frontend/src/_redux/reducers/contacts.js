@@ -2,14 +2,6 @@ import { ActionTypes } from "../constants/index";
 
 export default function contacts(state = {}, action = "") {
 	switch (action.type) {
-		case ActionTypes.INIT_CONTACTS:
-			return Object.assign({}, state, {
-				contacts: action.contacts,
-				sent: action.sent,
-				received: action.received,
-				requests: action.requests,
-			});
-
 		case ActionTypes.SET_AGGREGATED_CONTACTS:
 			return Object.assign({}, state, {
 				contacts: action.contacts,
@@ -38,6 +30,16 @@ export default function contacts(state = {}, action = "") {
 		case ActionTypes.SET_SELECTED_CONTACT:
 			return Object.assign({}, state, {
 				CURRENT_CONTACT: action.contact || [],
+			});
+
+		case ActionTypes.SET_SELECTED_ASKING:
+			return Object.assign({}, state, {
+				asking: action.asking || [],
+			});
+
+		case ActionTypes.SET_SELECTED_GIVING:
+			return Object.assign({}, state, {
+				giving: action.giving || [],
 			});
 
 		case ActionTypes.SEND_REQUEST_INFO:

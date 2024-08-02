@@ -94,15 +94,73 @@ export const formatBytes = (bytes, decimals = 2) => {
 };
 
 // ------------------------------------- PROFILE -------------------------------------
-export const getProfileInfo = (data, key, empty = "") => {
-	if (!data || !data[key]) {
-		return empty;
-	}
-	if (data[key].value) {
+
+export const getDirectoryProfileInfo = (data, key, empty = "") => {
+	if (data && data[key]?.value) {
 		return data[key].value;
 	}
-	return data[key];
+	return empty;
 };
+
+export const getProfileInfo = (data, key, empty = "") => {
+	if (data && data[key]) {
+		return data[key];
+	}
+	return empty;
+};
+
+export const aggregateLookingFor = (members) => {
+	let membersCount = members.length;
+
+	// TODO: "Other" for pie
+	let countNetworking = 0;
+	let countInvestors = 0;
+	let countCollaborators = 0;
+	let countInterests = 0;
+
+	for (let i = 0; i < membersCount; i++) {
+		if (!members[i]?.lookingFor)
+			continue;
+		let currLookingFor = members[i].lookingFor;
+		if (currLookingFor.includes("Networking"))
+			countNetworking++;
+		if (currLookingFor.includes("Investors"))
+			countInvestors++;
+		if (currLookingFor.includes("Collaborators"))
+			countCollaborators++;
+		countInterests += currLookingFor.length;
+	}
+
+	let _data = [
+		{
+			name: "Networking", value: countNetworking / countInterests * 100
+		},
+		{
+			name: "Investors", value: countInvestors / countInterests * 100
+		},
+		{
+			name: "Collaborators", value: countCollaborators / countInterests * 100
+		},
+	];
+	return _data;
+}
+
+export const stripAndRemoveNestin = (input) => {
+	let stripped = {};
+	for (const kv of Object.entries(input)) {
+		if (kv[1].show) {
+			if (kv[0] === "birthday")
+				stripped[kv[0]] = kv[1].displayText
+			else
+				stripped[kv[0]] = kv[1].value
+		}
+	}
+	if (input.name?.show === "nickname") {
+		stripped["firstName"] = null;
+		stripped["lastName"] = null;
+	}
+	return stripped;
+}
 
 // ------------------------------------- FOR DUMMY DATA -------------------------------------
 export const randomBoolFlag = () => {
@@ -110,18 +168,20 @@ export const randomBoolFlag = () => {
 };
 
 export const getListNameForAccount = (account) => {
+	if (!account)
+		return "User";
 	if (account.nickname) {
-		if (account.nickname.value) {
-			return account.nickname.value;
+		if (account.nickname) {
+			return account.nickname;
 		}
 		return account.nickname;
 	}
 
 	let name = "";
-	if (account.firstName.value)
-		name = name + account.firstName.value + " ";
-	if (account.lastName.value)
-		name = name + account.lastName.value;
+	if (account.firstName)
+		name = name + account.firstName + " ";
+	if (account.lastName)
+		name = name + account.lastName;
 	return name === "" ? "noname" : name;
 };
 

@@ -16,7 +16,7 @@ export default function MetamaskWaitingPage() {
 	const history = useHistory();
 	const { status, connect } = useMetaMask();
 
-	const [metamaskAccount, setMetamaskAccount] = useState("");
+	const [, setMetamaskAccount] = useState("");
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -50,8 +50,8 @@ export default function MetamaskWaitingPage() {
 			return null;
 		}
 		dispatch({
-			type: ActionTypes.LOGIN_SUCCESS,
-			user: loadedDbProfile,
+			type: ActionTypes.LOAD_CORE_PROFILE,
+			coreProfile: loadedDbProfile,
 		});
 		history.push(AppRoutes.home);
 	}

@@ -13,21 +13,23 @@ export default function ContactProfilePage(id) {
 	const dispatch = useDispatch();
 
 	const { CURRENT_CONTACT = {} } = useSelector(state => state.contacts);
-	const user = useSelector(state => state.user.user);
+	const coreProfile = useSelector(state => state.user.coreProfile);
 	let latestShare = useSelector(state => state.contacts.latestShare);
 
 	let [enrichedContact, setEnrichedContact] = useState(CURRENT_CONTACT);
 
 	useEffect(() => {
-		dispatch(loadLatestShare(CURRENT_CONTACT.id, user.id));
+		dispatch(loadLatestShare(CURRENT_CONTACT.userId, coreProfile.userId));
 	}, []);
 
 	useEffect(() => {
-		if (!latestShare)
+		if (!latestShare) {
+			setEnrichedContact(CURRENT_CONTACT);
 			return;
+		}
 
 		for (var propertyName in CURRENT_CONTACT) {
-			if (CURRENT_CONTACT[propertyName]?.show === true || CURRENT_CONTACT[propertyName]?.show === 'true') {
+			if (CURRENT_CONTACT[propertyName]) {
 				latestShare[propertyName] = CURRENT_CONTACT[propertyName];
 			}
 		}
@@ -38,13 +40,13 @@ export default function ContactProfilePage(id) {
 		<div className={s.root}>
 			<Header title="Contact Profile" showBack>
 				<div className={s.headerIcon}>
-					<a href={`#${AppRoutes.exchangeInfo}/${CURRENT_CONTACT.id}`}>
+					<a href={`#${AppRoutes.exchangeInfo}/${CURRENT_CONTACT.userId}`}>
 						<ExchangeIcon />
 					</a>
 				</div>
 			</Header>
 			<div className={s.content}>
-				<ProfileViewWidget profile={enrichedContact} />
+				<ProfileViewWidget profile={enrichedContact} isNested={false} />
 			</div>
 		</div>
 	);

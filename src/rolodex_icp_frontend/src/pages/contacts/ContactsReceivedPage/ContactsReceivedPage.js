@@ -9,36 +9,45 @@ import Footer from "../../../components/Footer/Footer";
 import TabsWidget from "../../../components/TabsWidget/TabsWidget";
 import InfoCard from "../../../components/InfoCard/InfoCard";
 import SortingWidget from "../../../components/SortingWidget/SortingWidget";
-import ContactsList from "../../../components/ContactsList/ContactsList";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
-import { loadGivenToMe } from "../../../_redux/actions/contacts";
+import { getUnknownContacts, loadGivenToMe } from "../../../_redux/actions/contacts";
+import GivingsToMeList from "../../../components/GivingsToMe/GivingsToMeList";
 
 // Received
 export default function ContactsReceivedPage() {
 	const dispatch = useDispatch();
 
 	const reduxContacts = useSelector(state => state.contacts);
-	const currentUser = useSelector(state => state.user.user);
-	const [contacts, setContacts] = useState([]);
+	const coreProfile = useSelector(state => state.user.coreProfile);
+	const [givingContacts, setGivingContacts] = useState([]);
 
 	useEffect(() => {
-		dispatch(loadGivenToMe(currentUser.id));
+		dispatch(loadGivenToMe(coreProfile.userId));
 	}, []);
 
 	useEffect(() => {
-		if (!reduxContacts || !reduxContacts.givenToMe)
+		if (!reduxContacts || !reduxContacts.givenToMe) // 0	1	0xf44ab...	216300737	0	{"id":1,"userId":0,"nickname":"Obi-Wan","first...	0	1721732465444
 			return;
-		const receivedData = reduxContacts.givenToMe.map(d => JSON.parse(d.shared_data));
-		if (reduxContacts.contacts) {
-			receivedData.forEach(recData => {
-				reduxContacts.contacts.forEach(contact => {
-					if (contact.id === recData.id) {
-						recData.directories = contact.directories;
-					}
-				})
+
+		let givingUserIds = reduxContacts.givenToMe.map(give => give.giverId);
+		let givingKnownContacts = reduxContacts.contacts.filter(c => givingUserIds.includes(c.userId));
+
+		const givingKnownContactsIds = givingKnownContacts.map(c => c.userId);
+		const givingNonContactsIds = givingUserIds.filter(id => !givingKnownContactsIds.includes(id));
+		getUnknownContacts(givingNonContactsIds, coreProfile.userId)
+			.then(nonContacts => {
+				givingKnownContacts.push(...nonContacts);
+				return givingKnownContacts;
 			})
-		}
-		setContacts(receivedData);
+			.then(allGivingContacts => {
+				let listGivings = [];
+				for (let i = 0; i < reduxContacts.givenToMe.length; i++) {
+					let givingContact = allGivingContacts.filter(c => c.userId === reduxContacts.givenToMe[i].giverId)[0];
+					let listGiving = { giving: reduxContacts.givenToMe[i], giver: givingContact };
+					listGivings.push(listGiving);
+				}
+				setGivingContacts(listGivings);
+			});
 	}, [reduxContacts]);
 
 	return (
@@ -70,13 +79,13 @@ export default function ContactsReceivedPage() {
 					description="Contacts who you have shared information with."
 				/>
 
-				<SortingWidget onUpdate={setContacts} members={contacts} />
-				<ContactsList contacts={contacts} showNewEntries />
+				<SortingWidget onUpdate={setGivingContacts} members={givingContacts} />
+				<GivingsToMeList givings={givingContacts} showNewEntries />
 			</div>
 
 			<Footer
 				page={AppRoutes.contacts}
-				search={<RoloSearch data={contacts} setData={setContacts} />}
+				search={<RoloSearch data={givingContacts} setData={setGivingContacts} />}
 			/>
 		</div>
 	);

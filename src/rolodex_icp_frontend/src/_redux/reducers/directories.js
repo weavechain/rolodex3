@@ -18,7 +18,7 @@ export default function directories(state = {}, action = "") {
 				CORE_DIRECTORY: action.directory,
 				CURRENT_DIRECTORY: action.directory,
 				directories: (state.directories || []).map((d) => {
-					return d.id === action.directory.id ? action.directory : d;
+					return d.directoryId === action.directory.directoryId ? action.directory : d;
 				}),
 			});
 

@@ -9,44 +9,86 @@ import ConfidentialComputingDialog from "../../../ConfidentialComputingDialog/Co
 
 export default function AddressComputationWidget({
 	profile,
-	updateModel = () => {},
+	updateModel = () => { },
 }) {
 	const [isComputational, setIsComputational] = useState(false);
+	const [displayText, setDisplayText] = useState(null);
 	const [format, setFormat] = useState(null);
-	const [displayText, setDisplayText] = useState("");
-
-	const { city, state, country, address } = profile;
 
 	useEffect(() => {
-		if (profile?.address?.show) {
-			setFormat(profile?.address.show);
-		} else {
-			setFormat("city, state, & country");
+		if (!profile?.country?.value && !profile?.state?.value && !profile?.city?.value)
+			return;
+
+		let _format = computeOrDefault();
+		setFormat(_format);
+		if (_format === "hide") {
+			setDisplayText(profile.address.displayText);
+			return;
 		}
-	}, [profile?.address]);
+
+		const dt = _format === "country"
+			? profile.country?.value
+			: _format === "hide"
+				? profile.address.displayText
+				: [profile.city?.value, profile.state?.value, profile.country?.value].join(", ");
+		updateModel({
+			compute: isComputational,
+			show: _format !== "hide",
+			displayText: displayText,
+			value: dt
+		});
+	}, []);
 
 	useEffect(() => {
-		if (!format) return;
+		if (!profile?.country?.value && !profile?.state?.value && !profile?.city?.value)
+			return;
 
-		const dt =
-			format === "country"
-				? profile.country?.value
-				: format === "hide"
-				? address?.value
-				: [city?.value, state?.value, country?.value].join(", ");
+		let _format = computeOrDefault();
+		setFormat(_format);
+
+		if (_format === "hide") {
+			setDisplayText(profile.address.displayText);
+			return;
+		}
+
+		const dt = _format === "country"
+			? profile.country?.value
+			: _format === "hide"
+				? profile.address.displayText
+				: [profile.city?.value, profile.state?.value, profile.country?.value].join(", ");
 
 		setDisplayText(dt);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [profile]);
+
+	const computeOrDefault = () => {
+		if (profile.address?.show === "false" || profile.address?.show === false)
+			return "hide";
+		if (profile.address?.value?.includes(','))
+			return "city, state, & country";
+		return "country";
+	}
+
+
+	const updateFormat = (f) => {
+		if (!f) return;
+
+		const dt = f === "hide"
+			? displayText
+			: f === "country"
+				? profile.country?.value
+				: [profile.city?.value, profile.state?.value, profile.country?.value].join(", ");
+		setFormat(f);
 
 		if (dt) {
 			updateModel({
-				show: format,
-				value: dt,
 				compute: isComputational,
+				show: f !== "hide",
+				displayText: displayText,
+				value: dt,
 			});
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [format]);
+	};
 
 	// ------------------------------------- METHODS -------------------------------------
 	const updateComputation = () => {
@@ -63,12 +105,12 @@ export default function AddressComputationWidget({
 				<AddressSelector
 					className={s.selector}
 					value={format}
-					onSelect={setFormat}
+					onSelect={updateFormat}
 				/>
 			</div>
 			<div
 				className={cx(s.sectionText, {
-					[s.restricted]: profile?.address?.show === "hide",
+					[s.restricted]: !profile?.address?.show || profile?.address?.show === false || profile?.address?.show === "false",
 				})}
 			>
 				{displayText}

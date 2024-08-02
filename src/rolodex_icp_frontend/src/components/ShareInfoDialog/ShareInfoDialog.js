@@ -16,9 +16,11 @@ export default function ShareInfoDialog({
 
 	// ------------------------------------- METHODS -------------------------------------
 	const viewDirectoryProfile = () => {
-		history.push(
+		history.go(-2);
+
+/* 		history.push(
 			`${AppRoutes.contacts}/${contactId}`
-		);
+		); */
 	};
 
 	const requestInfo = () => {

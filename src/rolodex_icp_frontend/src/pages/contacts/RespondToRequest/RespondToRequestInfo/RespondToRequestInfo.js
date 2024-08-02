@@ -3,7 +3,7 @@ import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { loadLatestShare, respondToRequest } from "../../../../_redux/actions/contacts";
+import { getCommonDirectory, loadLatestShare, respondToRequest } from "../../../../_redux/actions/contacts";
 
 import s from "./RespondToRequestInfo.module.scss";
 
@@ -14,49 +14,71 @@ import AppRoutes from "../../../../helpers/AppRoutes";
 import ShareInfoDialog from "../../../../components/ShareInfoDialog/ShareInfoDialog";
 import RespondToRequestWidget from "../RespondToRequestWidget/RespondToRequestWidget";
 import TabsWidget from "../../../../components/TabsWidget/TabsWidget";
+import { stripAndRemoveNestin } from "../../../../helpers/Utils";
+import { getDirectoryProfile } from "../../../../_redux/actions/user";
 
 export default function RespondToRequestInfo() {
 	const history = useHistory();
 	const dispatch = useDispatch();
 
+	const currentUser = useSelector(state => state.user.coreProfile);
+	const latestShare = useSelector(state => state.contacts.latestShare);
+	const reduxContacts = useSelector(state => state.contacts);
+	const currentAsking = reduxContacts.asking;
+
+	const [enrichedCurrentUser, setEnrichedCurrentUser] = useState(currentUser);
+	const [doneEnrichingNesting, setDoneEnrichingNesting] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
 	const [requestedFields, setRequestedFields] = useState([]);
+	const [commonDirectoryProfile, setCommonDirectoryProfile] = useState(null);
 
-	const reduxContacts = useSelector(state => state.contacts);
-	const currentRequestor = reduxContacts.CURRENT_CONTACT;
-	let currentUser = useSelector(state => state.user.user);
-
-	let [enrichedCurrentUser, setEnrichedCurrentUser] = useState(currentUser);
-	let latestShare = useSelector(state => state.contacts.latestShare);
-
+	// TODO: just for debugging purposes
 	const separateCurrentUserSetter = (newValue) => {
 		setEnrichedCurrentUser(newValue);
 	}
 
+	// get latest share where: currentUser = giver, currentContat = asker
 	useEffect(() => {
-		dispatch(loadLatestShare(currentUser.id, currentRequestor.id));
+		dispatch(loadLatestShare(currentUser.userId, currentAsking.asker.userId));
 	}, []);
 
+	// get data shared in the common directory
 	useEffect(() => {
-		if (!latestShare)
+		getCommonDirectory(currentUser.userId, currentAsking.asker.userId)
+			.then(dirId => getDirectoryProfile(dirId, currentUser.userId))
+			.then(dirProfile => setCommonDirectoryProfile(dirProfile));
+	}, [])
+
+	useEffect(() => {
+		if (!currentUser)
 			return;
 
-		for (var propertyName in latestShare) {
-			if (latestShare[propertyName]?.show === true || latestShare[propertyName]?.show === 'true') {
-				currentUser[propertyName] = latestShare[propertyName];
+		let nestedEnrichedUser = {};
+		for (const kv of Object.entries(currentUser)) {
+			nestedEnrichedUser[kv[0]] = { value: kv[1], show: false }
+		}
+
+		if (latestShare) {
+			for (const kv of Object.entries(latestShare)) {
+				nestedEnrichedUser[kv[0]] = { value: kv[1], show: true }
 			}
 		}
-		setEnrichedCurrentUser(currentUser);
-	}, [latestShare])
+		if (commonDirectoryProfile) {
+			for (const kv of Object.entries(commonDirectoryProfile)) {
+				nestedEnrichedUser[kv[0]] = { value: kv[1], show: true }
+			}
+		}
+
+		setEnrichedCurrentUser(nestedEnrichedUser);
+		setDoneEnrichingNesting(true);
+	}, [latestShare, commonDirectoryProfile])
 
 
 	useEffect(() => {
-		if (!reduxContacts?.askedFromMe)
+		if (!currentAsking?.asking?.asked)
 			return;
 
-		setRequestedFields(reduxContacts.askedFromMe
-			.filter(r => r.requestorId === currentRequestor.id)
-			.flatMap(r => JSON.parse(r.requested_data)));
+		setRequestedFields(JSON.parse(currentAsking.asking.asked));
 	}, [reduxContacts]);
 
 
@@ -70,14 +92,14 @@ export default function RespondToRequestInfo() {
 		return null;
 	}
 
-	const name = currentRequestor?.name?.value;
+	const name = currentAsking?.asker?.nickname;
 
 	// ------------------------------------- METHODS -------------------------------------
 	const shareInfo = () => {
 		setShowDialog(true);
 
-		// Share info
-		dispatch(respondToRequest(currentRequestor.wallet, currentRequestor.id, currentUser.id, requestedFields, { ...enrichedCurrentUser, was_seen: false }));
+		let stripped = stripAndRemoveNestin(enrichedCurrentUser);
+		dispatch(respondToRequest(currentAsking.asker.wallet, currentAsking.asker.userId, currentUser.userId, requestedFields, stripped));
 	};
 
 	return (
@@ -100,7 +122,7 @@ export default function RespondToRequestInfo() {
 
 			{showDialog ? (
 				<ShareInfoDialog
-					contactId={currentRequestor.id}
+					contactId={currentAsking.asker.userId}
 					close={() => setShowDialog(false)}
 				/>
 			) : null}
@@ -112,11 +134,15 @@ export default function RespondToRequestInfo() {
 				/>
 
 				<div className={s.fields}>
-					<RespondToRequestWidget
-						profile={enrichedCurrentUser}
-						requestedFields={requestedFields}
-						updateProfile={separateCurrentUserSetter}
-					/>
+					{
+						doneEnrichingNesting
+							? <RespondToRequestWidget
+								profile={enrichedCurrentUser}
+								requestedFields={requestedFields}
+								updateProfile={separateCurrentUserSetter}
+							/>
+							: null
+					}
 
 					<div className={cx(s.section, s.buttons)}>
 						<RoloButton text="Share Information" onClick={shareInfo} />

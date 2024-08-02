@@ -27,22 +27,22 @@ export default function RequestInfoPage() {
 	const { id } = useParams() || {};
 
 	const { CURRENT_DIRECTORY } = useSelector(state => state.directories);
-	const profile = useSelector(state => state.user).user;
+	const profile = useSelector(state => state.user.coreProfile);
 	const { CURRENT_CONTACT } = useSelector(state => state.contacts);
 
 	let latestShare = useSelector(state => state.contacts.latestShare);
 	let [enrichedContact, setEnrichedContact] = useState(CURRENT_CONTACT);
 
 	useEffect(() => {
-		dispatch(loadLatestShare(CURRENT_CONTACT.id, profile.id));
+		dispatch(loadLatestShare(CURRENT_CONTACT.userId, profile.userId));
 	}, []);
 
 	useEffect(() => {
 		if (!latestShare)
 			return;
 
-		for (var propertyName in CURRENT_CONTACT) {
-			if (latestShare[propertyName]?.show === true || latestShare[propertyName]?.show === 'true') {
+		for (var propertyName in latestShare) {
+			if (!CURRENT_CONTACT[propertyName]) {
 				CURRENT_CONTACT[propertyName] = latestShare[propertyName];
 			}
 		}
@@ -57,7 +57,7 @@ export default function RequestInfoPage() {
 			let selected = {};
 			let shared = [];
 			displayFields.forEach(({ key }) => {
-				if (enrichedContact[key] && (enrichedContact[key].show === 'true' || enrichedContact[key].show === true)) {
+				if (enrichedContact[key]) {
 					shared.push(key);
 					selected[key] = true;
 				}
@@ -74,7 +74,11 @@ export default function RequestInfoPage() {
 		return null;
 	}
 
-	const name = enrichedContact?.nickname?.value;
+	const name = enrichedContact?.nickname
+		? enrichedContact?.nickname
+		: enrichedContact?.firstName
+			? enrichedContact?.firstName
+			: "user";
 
 	// ------------------------------------- METHODS -------------------------------------
 	const requestInfo = () => {
@@ -88,8 +92,8 @@ export default function RequestInfoPage() {
 		dispatch(
 			sendNewDataRequest({
 				...profile,
-				requestorId: profile.id,
-				requesteeId: CURRENT_CONTACT.id,
+				askerId: profile.userId,
+				giverId: CURRENT_CONTACT.userId,
 				fields: requestedFields,
 			})
 		);

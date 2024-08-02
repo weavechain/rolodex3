@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import cx from "classnames";
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router";
@@ -14,17 +14,24 @@ import AppRoutes from "../../../../helpers/AppRoutes";
 import AvatarWidget from "../../../../components/AvatarWidget/AvatarWidget";
 import Header from "../../../../components/Header/Header";
 import FavoriteIcon from "../../../../components/icons/FavoriteIcon";
-import ExchangeIcon from "../../../../components/icons/ExchangeIcon";
+import RoloButton from "../../../../components/RoloButton/RoloButton";
+import { addContactToDb, checkIsContact } from "../../../../_redux/actions/contacts";
 
 export default function DirectoryMemberDetails() {
 	const history = useHistory();
-	const { id, memberId } = useParams() || {};
-
-	const { directories = [] } = useSelector((state) => state.directories);
-	const directory = directories.find((d) => d.id === id) || {};
-	const allMembers = directory?.members || [];
 
 	const member = useSelector(state => state.contacts.CURRENT_CONTACT);
+	const userId = useSelector(state => state.user?.coreProfile?.userId);
+
+	const [isContact, setIsContact] = useState(false);
+	const isMe = member.userId === userId;
+
+	useEffect(() => {
+		checkAndSetIsContact();
+	}, []);
+
+	// TODO: modal dialog with redirect options
+	const [showModalDialog, setShowModalDialog] = useState(false);
 
 	if (!member) {
 		history.push(AppRoutes.home);
@@ -33,30 +40,29 @@ export default function DirectoryMemberDetails() {
 
 	const visibleFields = [];
 	DISPLAY_FIELDS.forEach(({ name, key }) => {
-		if (member[key]?.show === "true" || member[key]?.show === true) {
-		visibleFields.push({
-			name: name,
-			value:
-				key === "birthday"
-					? member[key]?.displayText
-					: key === "lookingFor"
-					? member[key]?.value.join(", ")
-					: member[key]?.value,
-		});
-	}
+		if (member[key]) {
+			visibleFields.push({
+				name: name,
+				value: member[key]
+			});
+		}
 	});
+
+	const checkAndSetIsContact = () => {
+		checkIsContact(userId, member.userId)
+			.then(r => setIsContact(r));
+	}
+
+	const addContact = () => {
+		addContactToDb(userId, member.userId, member.directoryId)
+			.then(() => checkAndSetIsContact());
+	}
 
 	// ------------------------------------- METHODS -------------------------------------
 
 	return (
 		<div className={s.root}>
-			<Header title="Directory Profile" showBack>
-				<div className={s.headerIcon}>
-					<a href={`#${AppRoutes.exchangeInfo}/${member.id}`}>
-						<ExchangeIcon />
-					</a>
-				</div>
-			</Header>
+			<Header title="Directory Profile" showBack />
 
 			<div className={s.content}>
 				{/* AVATAR */}
@@ -88,12 +94,27 @@ export default function DirectoryMemberDetails() {
 								<a href={`mailto:${value}`}>{value}</a>
 							) : name === "Twitter" ? (
 								<a href={`${AppConfig.TWITTER_URL}${value}`}>{value}</a>
+							) : name === "Birthday" ? (
+								<>{value.displayText}</>
+							) : name === "Looking For" ? (
+								<>{value.join(", ")}</>
 							) : (
 								<>{value}</>
 							)}
 						</div>
 					</div>
 				))}
+				{/* todo: show if not contact already */}
+				{
+					isContact || isMe
+						? null
+						: <RoloButton
+							text="Add Contact"
+							className={s.button}
+							onClick={() => addContact()}
+							noIcon
+						/>
+				}
 			</div>
 		</div>
 	);

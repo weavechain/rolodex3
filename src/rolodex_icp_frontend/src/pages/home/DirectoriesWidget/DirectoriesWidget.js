@@ -30,8 +30,8 @@ export default function DirectoriesWidget({
 
 			{hasItems(directories) ? (
 				<div className={s.list}>
-					{itemsToDisplay.map(({ id, name, icon_svg, established_date }, index) => (
-						<a key={index} className={s.directory} href={`#/directories/${id}`}>
+					{itemsToDisplay.map(({ directoryId, name, icon_svg, established_date }, index) => (
+						<a key={index} className={s.directory} href={`#/directories/${directoryId}`}>
 							<div
 								className={cx(s.image, {
 									[s.whiteBg]: name === "EthGlobal Paris 2023",

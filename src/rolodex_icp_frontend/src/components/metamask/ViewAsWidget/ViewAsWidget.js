@@ -18,7 +18,7 @@ export default function ViewAsWidget() {
 
 	let hasJoined = false;
 	directories.forEach((d) => {
-		if (d.id !== CORE_DIRECTORY?.id && !!d.profile) {
+		if (d.directoryId !== CORE_DIRECTORY?.id && !!d.profile) {
 			hasJoined = true;
 		}
 	});

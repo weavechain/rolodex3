@@ -421,7 +421,7 @@ class NodeApi {
     }
 
     emailAuth(org, clientPubKey, targetWebUrl, email) {
-        return this.client.emailAuth(org, clientPubKey, targetWebUrl, email)
+        return this.client.emailAuth(org, clientPubKey, targetWebUrl, email, "rolodex")
     }
 }
 

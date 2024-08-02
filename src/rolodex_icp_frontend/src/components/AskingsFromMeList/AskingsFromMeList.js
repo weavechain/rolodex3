@@ -3,57 +3,62 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { getListNameForAccount, hasItems } from "../../helpers/Utils";
-import { setCurrentContact } from "../../_redux/actions/contacts";
+import { setCurrentAsking, setCurrentContact } from "../../_redux/actions/contacts";
 
-import s from "./ContactsList.module.scss";
+import s from "./AskingsFromMeList.module.scss";
 
 import ArrowRightIcon from "../icons/ArrowRightIcon";
 import EmptyImage from "../../assets/images/general/empty-directories.svg";
 import AppRoutes from "../../helpers/AppRoutes";
 
-export default function ContactsList({
-	contacts = [],
+export default function AskingsFromMeList({
+	askings = [],
 	showNewEntries = false,
-	onContactSelected,
+	onAskingSelected,
 }) {
 	const dispatch = useDispatch();
 	const history = useHistory();
 
 	// ------------------------------------- METHODS -------------------------------------
-	const viewContactDetails = (contact) => {
+	const viewAskingDetails = (asking) => {
 		dispatch(
-			setCurrentContact({
-				...contact,
+			setCurrentAsking({
+				...asking,
 				seen: false,
+			}))
+			.then(() => {
+				return dispatch(setCurrentContact({
+					...asking.asker
+				}))
 			})
-		).then(() => {
-			if (onContactSelected) {
-				onContactSelected(contact);
-			} else {
-				history.push(`${AppRoutes.contacts}/${contact.userId}`);
-			}
-		});
+			.then(() => {
+				if (onAskingSelected) {
+					onAskingSelected(asking);
+				} else {
+					history.push(`${AppRoutes.contacts}/${asking.asker.userId}`);
+				}
+			});
 	};
 
 	return (
 		<div className={s.root}>
-			{hasItems(contacts) ? (
+			{hasItems(askings) ? (
 				<>
-					{contacts.map((c, index) => (
+					{askings.map((a, index) => (
 						<div
 							key={index}
 							className={s.directory}
-							onClick={() => viewContactDetails(c)}
+							onClick={() => viewAskingDetails(a)}
 						>
 							<div className={s.info}>
-								<div className={s.name}>{getListNameForAccount(c)}</div>
+								<div className={s.name}>{getListNameForAccount(a.asker)}</div>
 								<div className={s.description}>
-									<span className={showNewEntries && !c.was_seen ? s.new : ""}>
-										{new Date(Number(c.ts)).toISOString().split('T')[0]}
+									<span className={showNewEntries && !a.was_seen ? s.new : ""}>
+										{new Date(Number(a.asker.ts)).toISOString().split('T')[0]}
 									</span>
 									<span className={s.separator}>|</span>
 									<span className={s.directories}>
-										{(c.directories || []).join(", ")}
+										{(a.directories || []).join(", ")}
 									</span>
 								</div>
 							</div>

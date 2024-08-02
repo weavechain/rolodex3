@@ -29,7 +29,7 @@ export default function LookingForWidget({
 
 	const toggleSelection = (name, isSelected) => {
 		setSelected({ ...selected, [name]: isSelected });
-		//updateModel({ ...data, value: options.filter((name) => selected[name]) });
+		updateModel({ ...data, value: options.filter((name) => selected[name]) });
 	};
 
 	const toggleShow = (isVisible) => {

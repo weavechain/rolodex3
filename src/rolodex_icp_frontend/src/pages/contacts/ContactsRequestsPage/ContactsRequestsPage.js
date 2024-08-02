@@ -5,37 +5,52 @@ import { useHistory } from "react-router";
 import s from "./ContactsRequestsPage.module.scss";
 
 import AppRoutes from "../../../helpers/AppRoutes";
-import ContactsList from "../../../components/ContactsList/ContactsList";
 import Footer from "../../../components/Footer/Footer";
 import Header from "../../../components/Header/Header";
 import InfoCard from "../../../components/InfoCard/InfoCard";
 import SortingWidget from "../../../components/SortingWidget/SortingWidget";
 import TabsWidget from "../../../components/TabsWidget/TabsWidget";
 import RoloSearch from "../../../components/RoloSearch/RoloSearch";
-import { loadAskedFromMe, loadShare } from "../../../_redux/actions/contacts";
+import { getUnknownContacts, loadAskedFromMe } from "../../../_redux/actions/contacts";
+import AskingsFromMeList from "../../../components/AskingsFromMeList/AskingsFromMeList";
 
 // Requests
 export default function ContactsRequestsPage() {
 	const history = useHistory();
 	const dispatch = useDispatch();
 
-	const reduxUser = useSelector(state => state.user);
+	const coreProfile = useSelector(state => state.user.coreProfile);
 	const reduxContacts = useSelector(state => state.contacts);
 
 	const [requestingContacts, setRequestingContacts] = useState([]);
 
 	useEffect(() => {
-		dispatch(loadAskedFromMe(reduxUser.user.id))
+		dispatch(loadAskedFromMe(coreProfile.userId))
 	}, []);
 
 	useEffect(() => {
-		if (!reduxContacts.askedFromMe)
+		if (!reduxContacts.askedFromMe) // <1	216300737	0	["lastName"]	0	1721730213932>
 			return;
 
-		const requestingUserIds = reduxContacts.askedFromMe
-			.map(ask => ask.requestorId);
-		const requestingContacts = reduxContacts.contacts.filter(c => requestingUserIds.includes(c.id));
-		setRequestingContacts(requestingContacts);
+		let requestingUserIds = reduxContacts.askedFromMe.map(ask => ask.askerId);
+		let requestingKnownContacts = reduxContacts.contacts.filter(c => requestingUserIds.includes(c.userId));
+
+		const requestingKnownContactsIds = requestingKnownContacts.map(c => c.userId);
+		const requestingNonContactIds = requestingUserIds.filter(id => !requestingKnownContactsIds.includes(id));
+		getUnknownContacts(requestingNonContactIds, coreProfile.userId)
+			.then(nonContacts => {
+				requestingKnownContacts.push(...nonContacts);
+				return requestingKnownContacts;
+			})
+			.then(allRequestingContats => {
+				let listAskings = [];
+				for (let i = 0; i < reduxContacts.askedFromMe.length; i++) {
+					let requestingContact = allRequestingContats.filter(c => c.userId === reduxContacts.askedFromMe[i].askerId)[0];
+					let listAsking = { asking: reduxContacts.askedFromMe[i], asker: requestingContact };
+					listAskings.push(listAsking);
+				}
+				setRequestingContacts(listAskings);
+			});
 	}, [reduxContacts]);
 
 	// ------------------------------------- METHODS -------------------------------------
@@ -73,10 +88,10 @@ export default function ContactsRequestsPage() {
 				/>
 
 				<SortingWidget onUpdate={setRequestingContacts} members={requestingContacts} />
-				<ContactsList
-					contacts={requestingContacts}
+				<AskingsFromMeList
+					askings={requestingContacts}
 					showNewEntries
-					onContactSelected={respondToRequest}
+					onAskingSelected={respondToRequest}
 				/>
 			</div>
 

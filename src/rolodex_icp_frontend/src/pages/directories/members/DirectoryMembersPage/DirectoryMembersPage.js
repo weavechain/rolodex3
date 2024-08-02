@@ -15,7 +15,7 @@ import FavoriteIcon from "../../../../components/icons/FavoriteIcon";
 import Footer from "../../../../components/Footer/Footer";
 import RoloSearch from "../../../../components/RoloSearch/RoloSearch";
 import { setUserProfileForDirectory } from "../../../../_redux/actions/directories";
-import { assureProfileIsUiFormat } from "../../../../_redux/reducers/user";
+import { assureDirectoryProfileIsUiFormat } from "../../../../_redux/reducers/user";
 import { getListNameForAccount } from "../../../../helpers/Utils";
 
 export default function DirectoryMembersPage() {
@@ -26,23 +26,20 @@ export default function DirectoryMembersPage() {
 	const [members, setMembers] = useState([]);
 
 	const { directories = [] } = useSelector((state) => state.directories);
-	const directory = directories.find((d) => d.id === id);
-	const user = useSelector(state => state.user.user);
+	const directory = directories.find((d) => d.directoryId === id);
+
+	const userId = useSelector(state => state.user.user);
 	const [hasJoined, setHasJoined] = useState(false);
 
 	useEffect(() => {
-		if (!user)
-			return;
-
-		const userId = user.id;
 		dispatch(setUserProfileForDirectory(userId, id))
-			.then(r => setHasJoined(r));
+			.then(r => setHasJoined(r ? true : false));
 	}, []);
 
 	useEffect(() => {
 		// TODO: load members from DB based on directory id
 		loadMembersOfDirectory(id)
-			.then(m => m.map(x => assureProfileIsUiFormat(x)))
+			.then(m => m.map(x => assureDirectoryProfileIsUiFormat(x)))
 			.then(m => setMembers(m));
 	}, [directory]);
 
@@ -57,7 +54,7 @@ export default function DirectoryMembersPage() {
 			})
 		).then(() => {
 			history.push(
-				`${AppRoutes.directories}/${directory.id}/members/${member.id}`
+				`${AppRoutes.directories}/${directory.directoryId}/members/${member.userId}`
 			);
 		});
 	};
@@ -69,11 +66,11 @@ export default function DirectoryMembersPage() {
 			{hasJoined ? (
 				<TabsWidget
 					tabs={[
-						{ name: "About", url: `${AppRoutes.directories}/${directory.id}` },
+						{ name: "About", url: `${AppRoutes.directories}/${directory.directoryId}` },
 						{ name: "Members", isActive: true },
 						{
 							name: "My Dir. Profile",
-							url: `${AppRoutes.directories}/${directory.id}/profile`,
+							url: `${AppRoutes.directories}/${directory.directoryId}/profile`,
 						},
 					]}
 				/>
@@ -96,7 +93,7 @@ export default function DirectoryMembersPage() {
 							<div className={s.info}>
 								<div className={s.name}>{getListNameForAccount(m)}</div>
 								<div className={s.dateCreated}>
-									Member since {new Date(Number(m.joinTs)).toISOString().split('T')[0]}
+									Member since {new Date(Number(m.ts)).toISOString().split('T')[0]}
 								</div>
 							</div>
 

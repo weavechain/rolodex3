@@ -25,9 +25,9 @@ export default function RoloDexApp() {
 	const meta = useMetaMask();
 	const dispatch = useDispatch();
 
-	const reduxUser = useSelector(state => state.user);
+	const coreProfile = useSelector(state => state.user.coreProfile);
 
-	const isLoggedIn = !!meta.account || reduxUser.user;
+	const isLoggedIn = !!meta.account || coreProfile;
 
 	useEffect(() => {
 		dispatch(initDirectories());

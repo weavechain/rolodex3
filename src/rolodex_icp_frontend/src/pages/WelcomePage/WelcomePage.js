@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useMetaMask } from "metamask-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-
-import { setCurrentDirectory } from "../../_redux/actions/directories";
 
 import s from "./WelcomePage.module.scss";
 
@@ -18,8 +16,7 @@ import AppRoutes from "../../helpers/AppRoutes";
 
 export default function WelcomePage() {
 	const history = useHistory();
-	const dispatch = useDispatch();
-	const { status, connect } = useMetaMask();
+	const { status } = useMetaMask();
 
 	const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 	const [downloadStarted, setDownloadStarted] = useState(false);
@@ -57,12 +54,9 @@ export default function WelcomePage() {
 		window.open(AppConfig.METAMASK_DOWNLOAD_URL, "_blank");
 	};
 
-	const joinDirectory = () => {
-		const directory = directories ? directories[0] : {};
-		// TODO: Set current directory WEV
-		dispatch(setCurrentDirectory(directory));
-
-		history.push(`${AppRoutes.directories}/${directory.id}`);
+	const createCoreProfileAndJoinCoreDir = () => {
+		const coreDirectoryId = directories ? directories[0].directoryId : null;
+		history.push(`${AppRoutes.directories}/${coreDirectoryId}`);
 	};
 
 	return (
@@ -83,7 +77,7 @@ export default function WelcomePage() {
 
 				<RoloButton
 					text="Join Directory"
-					onClick={joinDirectory}
+					onClick={createCoreProfileAndJoinCoreDir}
 					className={s.button}
 				/>
 

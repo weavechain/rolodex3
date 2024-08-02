@@ -13,16 +13,15 @@ import AppRoutes from "../../helpers/AppRoutes";
 
 export default function LeaveDirectoryDialog({ directory, close = () => { } }) {
 	const history = useHistory();
-	const dispatch = useDispatch();
-	const profile = useSelector(state => state.user);
+	let directoryProfile = useSelector(state => state.user.directoryProfile);
 
 	// ------------------------------------- METHODS -------------------------------------
 	const editProfile = () => {
-		history.push(`${AppRoutes.directories}/${directory.id}/profile/edit`);
+		history.push(`${AppRoutes.directories}/${directory.directoryId}/profile/edit`);
 	};
 
 	const leaveDirectory = () => {
-		removeUserFromDirectory(directory, profile)
+		removeUserFromDirectory(directory, directoryProfile)
 			.then(() => history.push(`${AppRoutes.myDirectories}`));
 	};
 
@@ -41,12 +40,6 @@ export default function LeaveDirectoryDialog({ directory, close = () => { } }) {
 
 			<ModalFooter>
 				<div className={s.buttons}>
-					<RoloButton
-						text="Edit Directory Profile"
-						className={cx(s.button, "btn-border")}
-						onClick={editProfile}
-						noIcon
-					/>
 
 					<RoloButton
 						text="Leave Directory"
