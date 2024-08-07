@@ -1,0 +1,7 @@
+version: '3'
+services:
+  avg_age:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rolodex_avg_age

@@ -1,0 +1,19 @@
+FROM python:3.8.0-slim as builder
+
+RUN mkdir /app/
+
+COPY ./requirements.txt /app
+
+RUN pip install --upgrade pip
+RUN pip install -r /app/requirements.txt
+
+FROM builder
+
+COPY ./avg_age.py /app
+COPY ./run.sh /app
+
+RUN chmod a+x /app/run.sh
+
+WORKDIR /app
+
+CMD [ "/app/run.sh" ]

@@ -1,0 +1,24 @@
+Building Docker image for Compute to Data
+
+- run a local docker server
+
+- build image from weavechain/python:
+  docker-compose -f avg_age.yml build
+  docker-compose -f avg_age_arm64.yml build
+
+- deploy image
+  docker tag avg_age gcr.io/weavechain/avg_age:1.0
+  docker push gcr.io/weavechain/avg_age:1.0
+  docker tag avg_age gcr.io/weavechain/avg_age:latest
+  docker push gcr.io/weavechain/avg_age:latest
+
+  docker tag avg_age_arm64 gcr.io/weavechain/avg_age:1.0-arm64
+  docker push gcr.io/weavechain/avg_age:1.0-arm64
+  docker tag avg_age_arm64 gcr.io/weavechain/avg_age:latest-arm64
+  docker push gcr.io/weavechain/avg_age:latest-arm64
+
+- test shell:
+  docker run -it avg_age /bin/bash
+
+- get latest
+  sudo docker pull gcr.io/weavechain/avg_age:latest

@@ -1,0 +1,13 @@
+pathlib
+certifi
+uuid
+demjson
+requests
+websocket-client
+cryptography
+PyCryptodome
+base58
+pynacl
+paramiko
+argparse
+weave-py-api

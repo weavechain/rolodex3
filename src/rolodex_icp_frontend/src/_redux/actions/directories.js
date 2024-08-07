@@ -7,6 +7,7 @@ import { Filter, FilterOp } from "../../weaveapi/filter";
 import { stringHashCode } from "../../helpers/Utils";
 import AppConfig from "../../AppConfig";
 import { assureDirectoryProfileIsUiFormat } from "../reducers/user";
+import { ComputeOptions } from "../../weaveapi/options";
 
 // TODO: where to get keys from?
 const pub = "weaved8xLnTMp5B5GtJwDQvc1u7K4fwPc2ry7iDieyCdJRHcG";
@@ -258,7 +259,7 @@ export const getAvgAge = async (directoryId) => {
 	await nodeApi.init();
 	const session = await nodeApi.login(organization, pub, scope || "*");
 
-	const avg = await nodeApi.compute(session, "rolodex_avg_age", WeaveHelper.Options.COMPUTE_DEFAULT); 
+	const avg = await nodeApi.compute(session, "rolodex_avg_age", new ComputeOptions(true, 300, 0, null, {directoryId: directoryId})); 
 	return avg?.data?.output?.split('=')[1]?.split('}')[0];
 }
 
